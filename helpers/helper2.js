@@ -13,13 +13,24 @@ function priceNormalization(price) {
   return price.substring(1).replace(/,/, '.');
 }
 
+function costCalculation(input) {
+  let price;
+  let quantity;
+
+  if (input.pricePerItem) {
+    price = priceNormalization(input.pricePerItem);
+    quantity = input.quantity;
+  } else {
+    price = priceNormalization(input.pricePerKilo);
+    quantity = input.weight;
+  }
+  return price * quantity;
+}
+
 // eslint-disable-next-line
 function compareByCost(a, b) {
-  let aKey = a.pricePerKilo || a.pricePerItem;
-  let bKey = b.pricePerKilo || b.pricePerItem;
-
-  aKey = Number(priceNormalization(aKey)) * (a.weight || a.quantity);
-  bKey = Number(priceNormalization(bKey)) * (b.weight || b.quantity);
+  const aKey = costCalculation(a);
+  const bKey = costCalculation(b);
 
   if (aKey > bKey) return 1;
   if (aKey === bKey) return 0;
@@ -33,4 +44,5 @@ function searchHighestCost(input = inputJson) {
 
 module.exports = {
   searchHighestCost,
+  costCalculation,
 };

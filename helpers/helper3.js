@@ -9,22 +9,19 @@
 // (бажано використати залишковий оператор(“Spread”))
 // Експортувати цю функцію через для підключення в майбутньому.
 
-function priceNormalization(price) {
-  return price.substring(1).replace(/,/, '.');
-}
+const { costCalculation } = require('./helper2');
 
-function costCalculation(data) {
+function addCostCalculation(data) {
   const input = data;
+  const output = [];
   input.forEach((elem) => {
     const element = elem;
-    const price =
-      priceNormalization(element.pricePerKilo || element.pricePerItem) *
-      (element.weight || element.quantity);
-    element.price = price;
+    const price = { price: costCalculation(element) };
+    output.push({ ...element, ...price });
   });
-  return input;
+  return output;
 }
 
 module.exports = {
-  costCalculation,
+  addCostCalculation,
 };

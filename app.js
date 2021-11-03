@@ -20,32 +20,44 @@
 
 const dataJson = require('./data.json');
 
+function consoleLog(message, output) {
+  console.log(`${message} = ${JSON.stringify(output)}`);
+  console.log('\r\n');
+}
+
 const {
   helper1: filter,
   helper2: searchHighestCost,
-  helper3: costCalculation,
+  helper3: addCostCalculation,
 } = require('./helpers');
 
 function boot(data) {
   const input = data;
-  console.log(costCalculation.costCalculation(input));
+  const costCalculation = addCostCalculation.addCostCalculation(input);
+  consoleLog('cost Calculation', costCalculation);
 
   const filterByItem = filter.filter(data, 'item', 'orange');
   const filterByWeight = filter.filter(data, 'weight', 4);
-  console.log(filterByItem);
-  console.log(filterByWeight);
+  consoleLog('filterByItem', filterByItem);
+  consoleLog('filterByWeight', filterByWeight);
 
   const highestCostByItem = searchHighestCost.searchHighestCost(filterByItem);
   const highestCostByWeight =
     searchHighestCost.searchHighestCost(filterByWeight);
-  console.log(highestCostByItem);
-  console.log(highestCostByWeight);
+  consoleLog('highestCostByItem', highestCostByItem);
+  consoleLog('highestCostByWeight', highestCostByWeight);
 
   const pooledResults = [];
   pooledResults.push(highestCostByItem, highestCostByWeight);
-  console.log(costCalculation.costCalculation(pooledResults));
+  consoleLog(
+    'pooledResults',
+    addCostCalculation.addCostCalculation(pooledResults),
+  );
 
-  console.log(searchHighestCost.searchHighestCost());
+  consoleLog(
+    'searchHighestCost without arguments',
+    searchHighestCost.searchHighestCost(),
+  );
 }
 
 boot(dataJson);
