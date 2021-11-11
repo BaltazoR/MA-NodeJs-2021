@@ -55,6 +55,14 @@ function commonPricePost(req, res) {
   res.end();
 }
 
+function modifyDataJson(req, res) {
+  const { message, code } = services.modifyDataJson(JSON.parse(req.body));
+  res.setHeader('Content-Type', 'application/json');
+  res.statusCode = code;
+  res.write(JSON.stringify({ message }));
+  res.end();
+}
+
 module.exports = {
   notFound,
   filter,
@@ -63,4 +71,5 @@ module.exports = {
   topPricePost,
   commonPrice,
   commonPricePost,
+  modifyDataJson,
 };

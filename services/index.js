@@ -1,3 +1,5 @@
+const path = require('path');
+const fs = require('fs');
 const helpers = require('./helpers');
 const dataJson = require('../data.json');
 
@@ -29,7 +31,18 @@ function validator(query) {
   // eslint-disable-next-line no-restricted-syntax
   for (const key in rules) {
     if ({}.hasOwnProperty.call(rules, key)) {
+      // console.log(key, query[key]);
       if (query[key]) {
+        if (
+          key === 'item' ||
+          key === 'type' ||
+          key === 'pricePerKilo' ||
+          key === 'pricePerItem'
+        ) {
+          // eslint-disable-next-line no-param-reassign
+          query[key] = String(query[key]);
+        }
+
         if (key === 'weight' || key === 'quantity') {
           // eslint-disable-next-line no-param-reassign
           query[key] = Number(query[key]);
@@ -196,6 +209,26 @@ function commonPricePost(body) {
   };
 }
 
+function modifyDataJson(body) {
+  if (checkValidation(body)) {
+    return {
+      code: 400,
+      message: 'Error input data validation',
+    };
+  }
+
+  const pathFileData = path.resolve('./data.json');
+
+  const data = JSON.stringify(body);
+  fs.writeFileSync(pathFileData, data);
+
+  const message = body;
+  return {
+    code: 200,
+    message,
+  };
+}
+
 module.exports = {
   notFound,
   filter,
@@ -204,4 +237,5 @@ module.exports = {
   topPricePost,
   commonPrice,
   commonPricePost,
+  modifyDataJson,
 };

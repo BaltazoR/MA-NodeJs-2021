@@ -20,5 +20,9 @@ module.exports = (req, res) => {
 
   if (pathname === '/commonprice' && method === 'POST')
     return controllers.commonPricePost(req, res);
+
+  if (pathname === '/data' && method === 'POST')
+    return controllers.modifyDataJson(req, res);
+
   return controllers.notFound(req, res);
 };
