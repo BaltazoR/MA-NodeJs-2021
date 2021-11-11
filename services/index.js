@@ -30,6 +30,14 @@ function validator(query) {
   for (const key in rules) {
     if ({}.hasOwnProperty.call(rules, key)) {
       if (query[key]) {
+        if (key === 'weight' || key === 'quantity') {
+          // eslint-disable-next-line no-param-reassign
+          query[key] = Number(query[key]);
+          // eslint-disable-next-line no-restricted-globals
+          if (isNaN(query[key])) {
+            return false;
+          }
+        }
         // eslint-disable-next-line valid-typeof
         if (typeof query[key] === rules[key]) {
           if (key === 'pricePerKilo' || key === 'pricePerItem') {
@@ -44,6 +52,7 @@ function validator(query) {
       }
     }
   }
+  return true;
 }
 
 function filter(params) {
@@ -56,8 +65,6 @@ function filter(params) {
   } else {
     params.forEach((value, name) => {
       filters[name] = value;
-      if (name === 'weight') filters[name] = Number(value);
-      if (name === 'quantity') filters[name] = Number(value);
     });
 
     if (!validator(filters, rules)) {
@@ -119,7 +126,7 @@ function filterPost(body) {
   };
 }
 
-function checkTopPriceValidation(input) {
+function checkValidation(input) {
   let resultOfValidation = false;
   input.forEach((element) => {
     if (!validator(element, rules)) {
@@ -130,7 +137,7 @@ function checkTopPriceValidation(input) {
 }
 
 function topPrice() {
-  if (checkTopPriceValidation(dataJson)) {
+  if (checkValidation(dataJson)) {
     return {
       code: 400,
       message: 'Error input data validation',
@@ -143,8 +150,9 @@ function topPrice() {
     message,
   };
 }
+
 function topPricePost(body) {
-  if (checkTopPriceValidation(body)) {
+  if (checkValidation(body)) {
     return {
       code: 400,
       message: 'Error input data validation',
@@ -158,10 +166,42 @@ function topPricePost(body) {
   };
 }
 
+function commonPrice() {
+  if (checkValidation(dataJson)) {
+    return {
+      code: 400,
+      message: 'Error input data validation',
+    };
+  }
+
+  const message = helpers.helper3.addCostCalculation(dataJson);
+  return {
+    code: 200,
+    message,
+  };
+}
+
+function commonPricePost(body) {
+  if (checkValidation(body)) {
+    return {
+      code: 400,
+      message: 'Error input data validation',
+    };
+  }
+
+  const message = helpers.helper3.addCostCalculation(body);
+  return {
+    code: 200,
+    message,
+  };
+}
+
 module.exports = {
   notFound,
   filter,
   filterPost,
   topPrice,
   topPricePost,
+  commonPrice,
+  commonPricePost,
 };

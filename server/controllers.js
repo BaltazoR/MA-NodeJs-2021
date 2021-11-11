@@ -39,10 +39,28 @@ function topPricePost(req, res) {
   res.end();
 }
 
+function commonPrice(req, res) {
+  const { message, code } = services.commonPrice(req.params);
+  res.setHeader('Content-Type', 'application/json');
+  res.statusCode = code;
+  res.write(JSON.stringify({ message }));
+  res.end();
+}
+
+function commonPricePost(req, res) {
+  const { message, code } = services.commonPricePost(JSON.parse(req.body));
+  res.setHeader('Content-Type', 'application/json');
+  res.statusCode = code;
+  res.write(JSON.stringify({ message }));
+  res.end();
+}
+
 module.exports = {
   notFound,
   filter,
   filterPost,
   topPrice,
   topPricePost,
+  commonPrice,
+  commonPricePost,
 };
