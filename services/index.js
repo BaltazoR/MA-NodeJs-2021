@@ -17,6 +17,9 @@ const rules = {
   pricePerItem: 'string',
 };
 
+function priceNormalization(price) {
+  return price.substring(1).replace(/,/, '.');
+}
 // eslint-disable-next-line consistent-return
 function validator(query) {
   if (Object.keys(query).length === 0) {
@@ -26,20 +29,18 @@ function validator(query) {
   // eslint-disable-next-line no-restricted-syntax
   for (const key in rules) {
     if ({}.hasOwnProperty.call(rules, key)) {
-      console.log(typeof query[key]);
       if (query[key]) {
         // eslint-disable-next-line valid-typeof
         if (typeof query[key] === rules[key]) {
-          if (key === ('pricePerKilo' || 'pricePerItem')) {
-            const price = query[key];
+          if (key === 'pricePerKilo' || key === 'pricePerItem') {
+            let price = query[key];
             if (!(price.search(/^\$([0-9]+([,.][0-9]*)?|[0-9]+)/) === -1)) {
-              return true;
+              price = priceNormalization(price);
+              if (Number(price)) return true;
             }
             return false;
           }
-          return true;
         }
-        return false;
       }
     }
   }
@@ -47,7 +48,7 @@ function validator(query) {
 
 function filter(params) {
   let message = '';
-  // const filters = [];
+
   const filters = {};
 
   if (params.toString().length === 0) {
@@ -55,10 +56,10 @@ function filter(params) {
   } else {
     params.forEach((value, name) => {
       filters[name] = value;
-      // filters.push({ [name]: value });
+      if (name === 'weight') filters[name] = Number(value);
+      if (name === 'quantity') filters[name] = Number(value);
     });
 
-    console.log(filters);
     if (!validator(filters, rules)) {
       return {
         code: 400,
