@@ -7,7 +7,6 @@ function notFound(req, res) {
   res.end();
 }
 
-// my
 function filter(req, res) {
   const { message, code } = services.filter(req.params);
   res.setHeader('Content-Type', 'application/json');
@@ -24,8 +23,26 @@ function filterPost(req, res) {
   res.end();
 }
 
+function topPrice(req, res) {
+  const { message, code } = services.topPrice(req.params);
+  res.setHeader('Content-Type', 'application/json');
+  res.statusCode = code;
+  res.write(JSON.stringify({ message }));
+  res.end();
+}
+
+function topPricePost(req, res) {
+  const { message, code } = services.topPricePost(JSON.parse(req.body));
+  res.setHeader('Content-Type', 'application/json');
+  res.statusCode = code;
+  res.write(JSON.stringify({ message }));
+  res.end();
+}
+
 module.exports = {
   notFound,
   filter,
   filterPost,
+  topPrice,
+  topPricePost,
 };

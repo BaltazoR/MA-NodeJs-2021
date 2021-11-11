@@ -119,8 +119,49 @@ function filterPost(body) {
   };
 }
 
+function checkTopPriceValidation(input) {
+  let resultOfValidation = false;
+  input.forEach((element) => {
+    if (!validator(element, rules)) {
+      resultOfValidation = true;
+    }
+  });
+  return resultOfValidation;
+}
+
+function topPrice() {
+  if (checkTopPriceValidation(dataJson)) {
+    return {
+      code: 400,
+      message: 'Error input data validation',
+    };
+  }
+
+  const message = helpers.helper2.searchHighestCost(dataJson);
+  return {
+    code: 200,
+    message,
+  };
+}
+function topPricePost(body) {
+  if (checkTopPriceValidation(body)) {
+    return {
+      code: 400,
+      message: 'Error input data validation',
+    };
+  }
+
+  const message = helpers.helper2.searchHighestCost(body);
+  return {
+    code: 200,
+    message,
+  };
+}
+
 module.exports = {
   notFound,
   filter,
   filterPost,
+  topPrice,
+  topPricePost,
 };
