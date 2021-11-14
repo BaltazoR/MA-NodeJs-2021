@@ -22,6 +22,7 @@ const rules = {
 function priceNormalization(price) {
   return price.substring(1).replace(/,/, '.');
 }
+
 // eslint-disable-next-line consistent-return
 function validator(query) {
   if (Object.keys(query).length === 0) {
@@ -29,9 +30,23 @@ function validator(query) {
   }
 
   // eslint-disable-next-line no-restricted-syntax
+  for (const qKey in query) {
+    if ({}.hasOwnProperty.call(query, qKey)) {
+      let result = 0;
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const rKey in rules) {
+        if ({}.hasOwnProperty.call(rules, rKey)) {
+          if (rKey === qKey) result = 1;
+        }
+      }
+      if (result === 0) return false;
+    }
+  }
+
+  // eslint-disable-next-line no-restricted-syntax
   for (const key in rules) {
     if ({}.hasOwnProperty.call(rules, key)) {
-      // console.log(key, query[key]);
       if (query[key]) {
         if (
           key === 'item' ||
@@ -109,8 +124,18 @@ function filter(params) {
   };
 }
 
-function filterPost(body) {
+function filterPost(reqBody) {
   let message = '';
+  let body = reqBody;
+
+  if (body.length === 0) {
+    return {
+      code: 400,
+      message: 'the request is empty',
+    };
+  }
+
+  body = JSON.parse(body);
 
   if (!validator(body, rules)) {
     return {
@@ -164,7 +189,18 @@ function topPrice() {
   };
 }
 
-function topPricePost(body) {
+function topPricePost(reqBody) {
+  let body = reqBody;
+
+  if (body.length === 0) {
+    return {
+      code: 400,
+      message: 'the request is empty',
+    };
+  }
+
+  body = JSON.parse(body);
+
   if (checkValidation(body)) {
     return {
       code: 400,
@@ -194,7 +230,18 @@ function commonPrice() {
   };
 }
 
-function commonPricePost(body) {
+function commonPricePost(reqBody) {
+  let body = reqBody;
+
+  if (body.length === 0) {
+    return {
+      code: 400,
+      message: 'the request is empty',
+    };
+  }
+
+  body = JSON.parse(body);
+
   if (checkValidation(body)) {
     return {
       code: 400,
@@ -209,7 +256,18 @@ function commonPricePost(body) {
   };
 }
 
-function modifyDataJson(body) {
+function modifyDataJson(reqBody) {
+  let body = reqBody;
+
+  if (body.length === 0) {
+    return {
+      code: 400,
+      message: 'the request is empty',
+    };
+  }
+
+  body = JSON.parse(body);
+
   if (checkValidation(body)) {
     return {
       code: 400,

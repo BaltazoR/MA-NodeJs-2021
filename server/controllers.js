@@ -16,7 +16,7 @@ function filter(req, res) {
 }
 
 function filterPost(req, res) {
-  const { message, code } = services.filterPost(JSON.parse(req.body));
+  const { message, code } = services.filterPost(req.body);
   res.setHeader('Content-Type', 'application/json');
   res.statusCode = code;
   res.write(JSON.stringify({ message }));
@@ -32,7 +32,7 @@ function topPrice(req, res) {
 }
 
 function topPricePost(req, res) {
-  const { message, code } = services.topPricePost(JSON.parse(req.body));
+  const { message, code } = services.topPricePost(req.body);
   res.setHeader('Content-Type', 'application/json');
   res.statusCode = code;
   res.write(JSON.stringify({ message }));
@@ -48,7 +48,7 @@ function commonPrice(req, res) {
 }
 
 function commonPricePost(req, res) {
-  const { message, code } = services.commonPricePost(JSON.parse(req.body));
+  const { message, code } = services.commonPricePost(req.body);
   res.setHeader('Content-Type', 'application/json');
   res.statusCode = code;
   res.write(JSON.stringify({ message }));
@@ -56,7 +56,7 @@ function commonPricePost(req, res) {
 }
 
 function modifyDataJson(req, res) {
-  const { message, code } = services.modifyDataJson(JSON.parse(req.body));
+  const { message, code } = services.modifyDataJson(req.body);
   res.setHeader('Content-Type', 'application/json');
   res.statusCode = code;
   res.write(JSON.stringify({ message }));
