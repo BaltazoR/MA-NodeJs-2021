@@ -23,6 +23,18 @@ function priceNormalization(price) {
   return price.substring(1).replace(/,/, '.');
 }
 
+function bodyRequestIsEmpty(reqBody, callback) {
+  const body = reqBody;
+
+  if (body.length === 0) {
+    return {
+      code: 400,
+      message: 'the request is empty',
+    };
+  }
+  return callback(JSON.parse(body));
+}
+
 // eslint-disable-next-line consistent-return
 function validator(query) {
   if (Object.keys(query).length === 0) {
@@ -31,12 +43,12 @@ function validator(query) {
 
   // eslint-disable-next-line no-restricted-syntax
   for (const qKey in query) {
-    if ({}.hasOwnProperty.call(query, qKey)) {
+    if (Object.hasOwnProperty.call(query, qKey)) {
       let result = 0;
 
       // eslint-disable-next-line no-restricted-syntax
       for (const rKey in rules) {
-        if ({}.hasOwnProperty.call(rules, rKey)) {
+        if (Object.hasOwnProperty.call(rules, rKey)) {
           if (rKey === qKey) result = 1;
         }
       }
@@ -46,7 +58,7 @@ function validator(query) {
 
   // eslint-disable-next-line no-restricted-syntax
   for (const key in rules) {
-    if ({}.hasOwnProperty.call(rules, key)) {
+    if (Object.hasOwnProperty.call(rules, key)) {
       if (query[key]) {
         if (
           key === 'item' ||
@@ -106,7 +118,7 @@ function filter(params) {
 
     // eslint-disable-next-line no-restricted-syntax
     for (const element in filters) {
-      if ({}.hasOwnProperty.call(filters, element)) {
+      if (Object.hasOwnProperty.call(filters, element)) {
         message = helpers.helper1.filter(message, element, filters[element]);
       }
     }
@@ -124,18 +136,8 @@ function filter(params) {
   };
 }
 
-function filterPost(reqBody) {
+function filterPost(body) {
   let message = '';
-  let body = reqBody;
-
-  if (body.length === 0) {
-    return {
-      code: 400,
-      message: 'the request is empty',
-    };
-  }
-
-  body = JSON.parse(body);
 
   if (!validator(body, rules)) {
     return {
@@ -147,7 +149,7 @@ function filterPost(reqBody) {
   message = dataJson;
   // eslint-disable-next-line no-restricted-syntax
   for (const key in body) {
-    if ({}.hasOwnProperty.call(body, key)) {
+    if (Object.hasOwnProperty.call(body, key)) {
       message = helpers.helper1.filter(message, key, body[key]);
     }
   }
@@ -189,18 +191,7 @@ function topPrice() {
   };
 }
 
-function topPricePost(reqBody) {
-  let body = reqBody;
-
-  if (body.length === 0) {
-    return {
-      code: 400,
-      message: 'the request is empty',
-    };
-  }
-
-  body = JSON.parse(body);
-
+function topPricePost(body) {
   if (checkValidation(body)) {
     return {
       code: 400,
@@ -230,18 +221,7 @@ function commonPrice() {
   };
 }
 
-function commonPricePost(reqBody) {
-  let body = reqBody;
-
-  if (body.length === 0) {
-    return {
-      code: 400,
-      message: 'the request is empty',
-    };
-  }
-
-  body = JSON.parse(body);
-
+function commonPricePost(body) {
   if (checkValidation(body)) {
     return {
       code: 400,
@@ -256,18 +236,7 @@ function commonPricePost(reqBody) {
   };
 }
 
-function modifyDataJson(reqBody) {
-  let body = reqBody;
-
-  if (body.length === 0) {
-    return {
-      code: 400,
-      message: 'the request is empty',
-    };
-  }
-
-  body = JSON.parse(body);
-
+function modifyDataJson(body) {
   if (checkValidation(body)) {
     return {
       code: 400,
@@ -296,4 +265,5 @@ module.exports = {
   commonPrice,
   commonPricePost,
   modifyDataJson,
+  bodyRequestIsEmpty,
 };
