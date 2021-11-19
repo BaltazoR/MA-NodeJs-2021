@@ -16,7 +16,7 @@ function addCostCalculation(data) {
   const output = [];
   input.forEach((elem) => {
     const element = elem;
-    const price = { price: costCalculation(element) };
+    const price = { price: `$${costCalculation(element)}` };
     output.push({ ...element, ...price });
   });
   return output;
