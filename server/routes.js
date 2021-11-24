@@ -24,5 +24,17 @@ module.exports = (req, res) => {
   if (pathname === '/data' && method === 'POST')
     return controllers.modifyDataJson(req, res);
 
+  if (
+    pathname === '/discount/promise' &&
+    (method === 'GET' || method === 'POST')
+  )
+    return controllers.myPromise(req, res);
+
+  if (
+    pathname === '/discount/promisify' &&
+    (method === 'GET' || method === 'POST')
+  )
+    return controllers.myPromisify(req, res);
+
   return controllers.notFound(req, res);
 };

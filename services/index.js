@@ -1,3 +1,4 @@
+const util = require('util');
 const path = require('path');
 const fs = require('fs');
 const helpers = require('./helpers');
@@ -256,6 +257,152 @@ function modifyDataJson(body) {
   };
 }
 
+function myPromise(req) {
+  // eslint-disable-next-line consistent-return
+  return new Promise((resolve, reject) => {
+    let input;
+
+    if (req.method === 'POST') {
+      const { body } = req;
+
+      if (body.length === 0) {
+        // eslint-disable-next-line prefer-promise-reject-errors
+        reject({
+          code: 400,
+          message: 'the request is empty',
+        });
+      }
+      input = JSON.parse(body);
+    }
+
+    if (req.method === 'GET') {
+      input = dataJson;
+    }
+
+    if (checkValidation(input)) {
+      // eslint-disable-next-line prefer-promise-reject-errors
+      reject({
+        code: 400,
+        message: 'Error input data validation',
+      });
+    }
+
+    const output = [];
+
+    const allPromise = input.map(
+      (element) =>
+        new Promise((resolveAll) => {
+          helpers.helper2
+            .discountPromise()
+            .then((result) => {
+              // console.log(element, 'then', result);
+              const priceWithDiscount = `$${helpers.helper2.discountCalculation(
+                element,
+                result,
+              )}`;
+              output.push({ ...element, priceWithDiscount });
+              resolveAll();
+            })
+            .catch(() => {
+              helpers.helper2
+                .discountPromise()
+                .then((result) => {
+                  // eslint-disable-next-line max-len
+                  const priceWithDiscount = `$${helpers.helper2.discountCalculation(
+                    element,
+                    result,
+                  )}`;
+                  output.push({ ...element, priceWithDiscount });
+                  resolveAll();
+                })
+                .catch((err) => {
+                  // eslint-disable-next-line prefer-promise-reject-errors
+                  reject({
+                    code: 500,
+                    message: err.message,
+                  });
+                });
+            });
+        }),
+    );
+
+    Promise.all(allPromise).then(() => resolve(output));
+  });
+}
+
+function myPromisify(req, callback) {
+  let input;
+
+  if (req.method === 'POST') {
+    const { body } = req;
+
+    if (body.length === 0) {
+      const err = {
+        code: 400,
+        message: 'the request is empty',
+      };
+      callback(err);
+    }
+    input = JSON.parse(body);
+  }
+
+  if (req.method === 'GET') {
+    input = dataJson;
+  }
+
+  if (checkValidation(input)) {
+    // eslint-disable-next-line prefer-promise-reject-errors
+    const err = {
+      code: 400,
+      message: 'Error input data validation',
+    };
+    callback(err);
+  }
+
+  const output = [];
+
+  const promisifyElement = util.promisify(helpers.helper2.discountPromisify);
+
+  const allPromise = input.map((element) =>
+    promisifyElement()
+      .then((result) => {
+        // eslint-disable-next-line max-len
+        const priceWithDiscount = `$${helpers.helper2.discountCalculation(
+          element,
+          result,
+        )}`;
+        output.push({ ...element, priceWithDiscount });
+      })
+      .catch(() => {
+        promisifyElement()
+          .then((result) => {
+            const priceWithDiscount = `$${helpers.helper2.discountCalculation(
+              element,
+              result,
+            )}`;
+            output.push({ ...element, priceWithDiscount });
+          })
+          .catch((err) => {
+            const error = {
+              code: 500,
+              message: err.message,
+            };
+            callback(error);
+          });
+      }),
+  );
+
+  Promise.all(allPromise)
+    .then(() => callback(null, output))
+    .catch((err) => {
+      const error = {
+        code: 500,
+        message: err.message,
+      };
+      callback(error);
+    });
+}
+
 module.exports = {
   notFound,
   filter,
@@ -266,4 +413,6 @@ module.exports = {
   commonPricePost,
   modifyDataJson,
   bodyRequestIsEmpty,
+  myPromise,
+  myPromisify,
 };

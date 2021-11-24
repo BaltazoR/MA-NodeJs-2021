@@ -1,3 +1,4 @@
+const util = require('util');
 const services = require('../services');
 
 function notFound(req, res) {
@@ -79,6 +80,52 @@ function modifyDataJson(req, res) {
   res.end();
 }
 
+function myPromise(req, res) {
+  services
+    .myPromise(req)
+    .then((data) => {
+      const message = data;
+      let code;
+
+      if (message) code = 200;
+
+      res.setHeader('Content-Type', 'application/json');
+      res.statusCode = code;
+      res.write(JSON.stringify({ message }));
+      res.end();
+    })
+    .catch((err) => {
+      res.setHeader('Content-Type', 'application/json');
+      res.statusCode = err.code;
+      const { message } = err;
+      res.write(JSON.stringify({ message }));
+      res.end();
+    });
+}
+
+function myPromisify(req, res) {
+  const output = util.promisify(services.myPromisify);
+  output(req)
+    .then((data) => {
+      const message = data;
+      let code;
+
+      if (message) code = 200;
+
+      res.setHeader('Content-Type', 'application/json');
+      res.statusCode = code;
+      res.write(JSON.stringify({ message }));
+      res.end();
+    })
+    .catch((err) => {
+      res.setHeader('Content-Type', 'application/json');
+      res.statusCode = err.code;
+      const { message } = err;
+      res.write(JSON.stringify({ message }));
+      res.end();
+    });
+}
+
 module.exports = {
   notFound,
   filter,
@@ -88,4 +135,6 @@ module.exports = {
   commonPrice,
   commonPricePost,
   modifyDataJson,
+  myPromise,
+  myPromisify,
 };
