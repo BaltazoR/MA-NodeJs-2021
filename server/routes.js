@@ -36,5 +36,8 @@ module.exports = (req, res) => {
   )
     return controllers.myPromisify(req, res);
 
+  if (pathname === '/discount/async' && (method === 'GET' || method === 'POST'))
+    return controllers.myAsync(req, res);
+
   return controllers.notFound(req, res);
 };
