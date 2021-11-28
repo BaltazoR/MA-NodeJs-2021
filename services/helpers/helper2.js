@@ -1,4 +1,6 @@
+// const util = require('util');
 const inputJson = require('../../data.json');
+// const { discount } = require('../discount');
 
 function priceNormalization(price) {
   return price.substring(1).replace(/,/, '.');
@@ -33,7 +35,12 @@ function searchHighestCost(input = inputJson) {
   return sortArray.sort(compareByCost).pop();
 }
 
+// const discountPromisify = util.promisify(discount);
+
 module.exports = {
   searchHighestCost,
   costCalculation,
+  priceNormalization,
+  // discountPromise,
+  // discountPromisify,
 };

@@ -1,4 +1,8 @@
 const services = require('../services');
+const { discountPromise } = require('../services/helpers');
+const { discountPromisify } = require('../services/helpers');
+const { discountAsync } = require('../services/helpers');
+const { wrapperRequest } = require('../services');
 
 function notFound(req, res) {
   const { message, code } = services.notFound();
@@ -79,6 +83,18 @@ function modifyDataJson(req, res) {
   res.end();
 }
 
+function myPromise(req, res) {
+  wrapperRequest(req, res, discountPromise);
+}
+
+function myPromisify(req, res) {
+  wrapperRequest(req, res, discountPromisify);
+}
+
+function myAsync(req, res) {
+  wrapperRequest(req, res, discountAsync);
+}
+
 module.exports = {
   notFound,
   filter,
@@ -88,4 +104,7 @@ module.exports = {
   commonPrice,
   commonPricePost,
   modifyDataJson,
+  myPromise,
+  myPromisify,
+  myAsync,
 };

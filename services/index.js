@@ -256,6 +256,55 @@ function modifyDataJson(body) {
   };
 }
 
+function outResponse(res, data) {
+  const { message } = data;
+  const { code } = data;
+
+  res.setHeader('Content-Type', 'application/json');
+  res.statusCode = code;
+  res.write(JSON.stringify({ message }));
+  res.end();
+}
+
+function wrapperRequest(req, res, method) {
+  let input;
+
+  if (req.method === 'POST') {
+    const { body } = req;
+
+    if (body.length === 0) {
+      // eslint-disable-next-line prefer-promise-reject-errors
+      const data = {
+        code: 400,
+        message: 'the request is empty',
+      };
+      return outResponse(res, data);
+    }
+    input = JSON.parse(body);
+  }
+
+  if (req.method === 'GET') {
+    input = dataJson;
+  }
+
+  if (checkValidation(input)) {
+    // eslint-disable-next-line prefer-promise-reject-errors
+    const data = {
+      code: 400,
+      message: 'Error input data validation',
+    };
+    return outResponse(res, data);
+  }
+
+  return method(input).then((message) => {
+    const data = {
+      message,
+      code: 200,
+    };
+    return outResponse(res, data);
+  });
+}
+
 module.exports = {
   notFound,
   filter,
@@ -266,4 +315,5 @@ module.exports = {
   commonPricePost,
   modifyDataJson,
   bodyRequestIsEmpty,
+  wrapperRequest,
 };
