@@ -16,16 +16,21 @@ module.exports = async (data) => {
   const itemsData = JSON.parse(JSON.stringify(data));
 
   const result = await Promise.all(
-    itemsData.map((item) =>
-      // eslint-disable-next-line no-shadow
-      discountAsync().then((discount) => {
+    itemsData.map(async (item) => {
+      try {
+        // eslint-disable-next-line no-shadow
+        const discount = await discountAsync();
         const priceWithDiscount = discountCalculation(item, discount);
+
         return Object.assign(item, {
           priceWithDiscount,
           discount: `${discount}%`,
         });
-      }),
-    ),
+      } catch (err) {
+        console.log(err);
+        return err;
+      }
+    }),
   );
 
   return result;
