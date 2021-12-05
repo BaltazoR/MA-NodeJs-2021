@@ -1,7 +1,12 @@
-const path = require('path');
+// const path = require('path');
 const fs = require('fs');
+const { pipeline } = require('stream');
+const { promisify } = require('util');
 const helpers = require('./helpers');
 const dataJson = require('../data.json');
+const { createCsvToJson } = require('./helpers/csv-to-json');
+
+const promisifiedPipeline = promisify(pipeline);
 
 function notFound() {
   return {
@@ -23,8 +28,20 @@ function priceNormalization(price) {
   return price.substring(1).replace(/,/, '.');
 }
 
-function bodyRequestIsEmpty(reqBody, callback) {
-  const body = reqBody;
+function bodyRequestIsEmpty(req, callback) {
+  let output;
+  let body = '';
+
+  if (req.method === 'PUT') {
+    try {
+      const data = fs.readFileSync(req.filePath, 'utf8');
+      body = data;
+    } catch (err) {
+      console.error('ERROR:', err.message);
+    }
+  } else {
+    body = req.body;
+  }
 
   if (body.length === 0) {
     return {
@@ -32,7 +49,18 @@ function bodyRequestIsEmpty(reqBody, callback) {
       message: 'the request is empty',
     };
   }
-  return callback(JSON.parse(body));
+
+  try {
+    output = JSON.parse(body);
+  } catch (err) {
+    console.error(err.message);
+    return {
+      code: 500,
+      message: err.message,
+    };
+  }
+
+  return callback(output);
 }
 
 // eslint-disable-next-line consistent-return
@@ -244,10 +272,10 @@ function modifyDataJson(body) {
     };
   }
 
-  const pathFileData = path.resolve('./data.json');
+  // const pathFileData = path.resolve('./data.json');
 
-  const data = JSON.stringify(body);
-  fs.writeFileSync(pathFileData, data);
+  // const data = JSON.stringify(body);
+  // fs.writeFileSync(pathFileData, data);
 
   const message = body;
   return {
@@ -305,6 +333,21 @@ function wrapperRequest(req, res, method) {
   });
 }
 
+// eslint-disable-next-line consistent-return
+async function uploadCsv(inputStream) {
+  const timestamp = Date.now();
+  const filePath = `./upload/${timestamp}.json`;
+  const outputStream = fs.createWriteStream(filePath);
+  const csvToJson = createCsvToJson();
+
+  try {
+    await promisifiedPipeline(inputStream, csvToJson, outputStream);
+    return filePath;
+  } catch (err) {
+    console.error('CSV pipeline failed', err);
+  }
+}
+
 module.exports = {
   notFound,
   filter,
@@ -316,4 +359,5 @@ module.exports = {
   modifyDataJson,
   bodyRequestIsEmpty,
   wrapperRequest,
+  uploadCsv,
 };

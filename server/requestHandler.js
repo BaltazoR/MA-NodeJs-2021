@@ -1,12 +1,27 @@
 const routes = require('./routes');
+const { handleStreamRoutes } = require('./controllers');
 
-module.exports = (req, res) => {
-  const {
-    url,
-    headers: { host },
-  } = req;
+// eslint-disable-next-line consistent-return
+module.exports = async (req, res) => {
+  const { url, headers } = req;
 
-  const { pathname, searchParams } = new URL(url, `https://${host}`);
+  const { pathname, searchParams } = new URL(url, `https://${headers.host}`);
+
+  if (req.headers['content-type'] === 'text/csv') {
+    const filePath = await handleStreamRoutes(req, res).catch((err) =>
+      console.log(err),
+    );
+    return routes(
+      {
+        ...req,
+        filePath,
+        pathname,
+        params: searchParams,
+        headers,
+      },
+      res,
+    );
+  }
 
   let body = [];
 
@@ -20,12 +35,13 @@ module.exports = (req, res) => {
     .on('end', () => {
       body = Buffer.concat(body).toString();
 
-      routes(
+      return routes(
         {
           ...req,
           pathname,
           body,
           params: searchParams,
+          headers,
         },
         res,
       );
