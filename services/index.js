@@ -28,9 +28,6 @@ function latestFile() {
   return pathLastFile;
 }
 
-// eslint-disable-next-line import/no-dynamic-require
-const dataJson = require(`${latestFile()}`);
-
 function notFound() {
   return {
     code: 404,
@@ -152,6 +149,8 @@ function filter(params) {
   const filters = {};
 
   if (params.toString().length === 0) {
+    // eslint-disable-next-line import/no-dynamic-require
+    const dataJson = require(`${latestFile()}`);
     message = dataJson;
   } else {
     params.forEach((value, name) => {
@@ -197,6 +196,8 @@ function filterPost(body) {
     };
   }
 
+  // eslint-disable-next-line import/no-dynamic-require
+  const dataJson = require(`${latestFile()}`);
   message = dataJson;
   // eslint-disable-next-line no-restricted-syntax
   for (const key in body) {
@@ -335,6 +336,8 @@ function wrapperRequest(req, res, method) {
   }
 
   if (req.method === 'GET') {
+    // eslint-disable-next-line import/no-dynamic-require
+    const dataJson = require(`${latestFile()}`);
     input = dataJson;
   }
 
@@ -396,6 +399,9 @@ async function optimizeJson(file) {
 
   try {
     fs.writeFileSync(filePath, content);
+    fs.unlink(file, (err) => {
+      if (err) throw err;
+    });
     return filePath;
   } catch (err) {
     console.error('CSV pipeline failed', err);
