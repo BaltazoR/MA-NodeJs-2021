@@ -24,7 +24,8 @@ function latestFile() {
       // console.log(latestF);
     }
   });
-  const pathLastFile = `${pathFileData}/${latestF}.json`;
+  let pathLastFile = `${pathFileData}/${latestF}.json`;
+  if (!latestF) pathLastFile = path.resolve('data.json');
   return pathLastFile;
 }
 
@@ -163,7 +164,7 @@ function filter(params) {
         message: 'Error input data validation',
       };
     }
-
+    const dataJson = require(`${latestFile()}`);
     message = dataJson;
 
     // eslint-disable-next-line no-restricted-syntax
@@ -229,6 +230,7 @@ function checkValidation(input) {
 }
 
 function topPrice() {
+  const dataJson = require(`${latestFile()}`);
   if (checkValidation(dataJson)) {
     return {
       code: 400,
@@ -259,6 +261,7 @@ function topPricePost(body) {
 }
 
 function commonPrice() {
+  const dataJson = require(`${latestFile()}`);
   if (checkValidation(dataJson)) {
     return {
       code: 400,
