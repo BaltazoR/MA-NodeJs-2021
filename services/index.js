@@ -1,12 +1,35 @@
-// const path = require('path');
+/* eslint-disable global-require */
+const path = require('path');
 const fs = require('fs');
 const { pipeline } = require('stream');
 const { promisify } = require('util');
 const helpers = require('./helpers');
-const dataJson = require('../data.json');
+// const dataJson = require('../data.json');
 const { createCsvToJson } = require('./helpers/csv-to-json');
+const { optimizeJson: jsonOptimize, calc } = require('./helpers/jsonOptimize');
 
 const promisifiedPipeline = promisify(pipeline);
+
+function latestFile() {
+  let latestF = 0;
+  const pathFileData = path.resolve('upload');
+  // console.log(pathFileData);
+  const listFile = fs.readdirSync(pathFileData);
+  listFile.forEach((file) => {
+    // console.log(file);
+    let dateFile = file.replace('.json', '');
+    dateFile = Number(dateFile);
+    if (typeof dateFile === 'number') {
+      if (dateFile > latestF) latestF = dateFile;
+      // console.log(latestF);
+    }
+  });
+  const pathLastFile = `${pathFileData}/${latestF}.json`;
+  return pathLastFile;
+}
+
+// eslint-disable-next-line import/no-dynamic-require
+const dataJson = require(`${latestFile()}`);
 
 function notFound() {
   return {
@@ -336,12 +359,43 @@ function wrapperRequest(req, res, method) {
 // eslint-disable-next-line consistent-return
 async function uploadCsv(inputStream) {
   const timestamp = Date.now();
-  const filePath = `./upload/${timestamp}.json`;
+  const filePath = `./upload/${timestamp}_not_optimize.json`;
   const outputStream = fs.createWriteStream(filePath);
   const csvToJson = createCsvToJson();
+  const optimizeFirst = jsonOptimize();
 
   try {
-    await promisifiedPipeline(inputStream, csvToJson, outputStream);
+    await promisifiedPipeline(
+      inputStream,
+      csvToJson,
+      optimizeFirst,
+      outputStream,
+    );
+    return filePath;
+  } catch (err) {
+    console.error('CSV pipeline failed', err);
+  }
+}
+
+// eslint-disable-next-line consistent-return
+async function optimizeJson(file) {
+  let inputStream = fs.readFileSync(file);
+  inputStream = inputStream.toString();
+  inputStream = inputStream.replace('[{', '');
+  inputStream = inputStream.replace(']', '');
+  inputStream = inputStream.split(',{');
+  // inputStream = JSON.stringify(inputStream);
+  // const timestamp = Date.now();
+  const filePath = file.replace('_not_optimize', '');
+
+  let content = calc(inputStream);
+  content = content.output;
+  content = JSON.stringify(content);
+
+  // const csvToJson = createCsvToJson();
+
+  try {
+    fs.writeFileSync(filePath, content);
     return filePath;
   } catch (err) {
     console.error('CSV pipeline failed', err);
@@ -360,4 +414,5 @@ module.exports = {
   bodyRequestIsEmpty,
   wrapperRequest,
   uploadCsv,
+  optimizeJson,
 };

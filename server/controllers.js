@@ -3,7 +3,7 @@ const { discountPromise } = require('../services/helpers');
 const { discountPromisify } = require('../services/helpers');
 const { discountAsync } = require('../services/helpers');
 const { wrapperRequest } = require('../services');
-const { uploadCsv } = require('../services');
+const { uploadCsv, optimizeJson } = require('../services');
 
 function notFound(req, res) {
   const { message, code } = services.notFound();
@@ -98,7 +98,8 @@ function myAsync(req, res) {
 
 async function handleStreamRoutes(req) {
   try {
-    const filePath = await uploadCsv(req);
+    const fileNotOptimise = await uploadCsv(req);
+    const filePath = await optimizeJson(fileNotOptimise);
     return filePath;
   } catch (err) {
     console.error('Failed to upload CSV', err);

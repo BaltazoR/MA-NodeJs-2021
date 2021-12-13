@@ -45,7 +45,7 @@ function parseChunk(chunk, key, fromFirstChunk, first) {
 
         if (key[i] === 'measureValue') {
           // eslint-disable-next-line consistent-return
-          return `"${concatKey}": "${value}"`;
+          return [concatKey, value];
         }
 
         if (key[i] === 'priceType') {
@@ -54,19 +54,17 @@ function parseChunk(chunk, key, fromFirstChunk, first) {
         }
 
         if (key[i] === 'priceValue') {
-          if (value.indexOf('"') !== -1) console.log('"', value);
-          if (value.indexOf(',') !== -1) console.log(',', value);
           // eslint-disable-next-line consistent-return
-          return `"${concatValue}": "${value}"`;
+          return [concatValue, value];
         }
 
         // eslint-disable-next-line consistent-return
-        return `"${key[i]}": "${value}"`;
+        return [key[i], value];
       });
 
       item = item.filter((el) => el !== undefined);
 
-      return `\n{${item}}`;
+      return Object.fromEntries(item);
       // eslint-disable-next-line no-else-return
     } else {
       incomplete = itemRaw;
@@ -75,8 +73,9 @@ function parseChunk(chunk, key, fromFirstChunk, first) {
     return '';
   });
 
-  output = output.filter((el) => el !== undefined);
-  output = `${output.toString()}`;
+  output = output.filter((el) => el !== '');
+  output = JSON.stringify(output);
+  // output = `${output.toString()}`;
 
   return {
     output,
@@ -97,7 +96,8 @@ function createCsvToJson() {
 
       const output = parseChunk(chunk, key, null, true);
 
-      const chunkJson = `[${output.output}`;
+      let chunkJson = output.output;
+      chunkJson = chunkJson.substring(0, chunkJson.length - 1);
 
       fromFirstChunk = output.incomplete;
 
@@ -108,11 +108,14 @@ function createCsvToJson() {
 
     fromFirstChunk = output.incomplete;
 
-    return callback(null, output.output);
+    let chunkJson = output.output;
+    chunkJson = chunkJson.substring(1, chunkJson.length - 1);
+
+    return callback(null, `,${chunkJson}`);
   };
 
   const flush = (callback) => {
-    callback(null, '\n]');
+    callback(null, ']\n');
   };
 
   return new Transform({ transform, flush });
