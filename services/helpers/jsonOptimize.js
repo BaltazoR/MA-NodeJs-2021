@@ -8,12 +8,13 @@ function calc(chunk) {
   let elem = '';
 
   stringChunk.forEach((element) => {
-    if (element.slice(-1) === ']') {
-      elem = element.slice(0, -1);
+    elem = element.trim();
+    if (elem.slice(-1) === ']') {
+      elem = elem.slice(0, -1);
     }
 
-    if (element.slice(-1) === '}') {
-      elem = element.slice(0, -1);
+    if (elem.slice(-1) === '}') {
+      elem = elem.slice(0, -1);
       const elementToArray = elem.split(',');
       const elementToJson = JSON.parse(`{${elementToArray}}`);
 
@@ -25,7 +26,7 @@ function calc(chunk) {
         let count = 0;
         if (accumulator[key]) count = accumulator[key].quantity;
 
-        accumulator[elementToJson.item + elementToJson.type] = {
+        accumulator[key] = {
           item: elementToJson.item,
           type: elementToJson.type,
           quantity: count + Number(elementToJson.quantity),
