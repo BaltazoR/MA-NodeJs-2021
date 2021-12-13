@@ -23,15 +23,13 @@ function parseChunk(chunk, key, fromFirstChunk, first) {
 
   // eslint-disable-next-line array-callback-return
   let output = stringChunk.map((itemRaw) => {
-    let item = itemRaw.replaceAll('"', '');
+    let item = itemRaw.replace('"', '');
 
-    item = item.replace(/\$\d+,\d+/, (data) => {
-      const repl = data.replace(',', '.');
-      // repl = repl.replaceAll('"', '');
-      return repl;
-    });
-
-    item = item.split(',');
+    item = item.replace(/(\d+),(\d+)/, '$1.$2');
+    item = item
+      .split(',')
+      .map((element) => element.replace('.', ','))
+      .map((element) => element.replace('"', ''));
 
     let concatKey = '';
     let concatValue = '';
