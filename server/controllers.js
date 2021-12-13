@@ -3,6 +3,7 @@ const { discountPromise } = require('../services/helpers');
 const { discountPromisify } = require('../services/helpers');
 const { discountAsync } = require('../services/helpers');
 const { wrapperRequest } = require('../services');
+const { uploadCsv, optimizeJson } = require('../services');
 
 function notFound(req, res) {
   const { message, code } = services.notFound();
@@ -73,7 +74,7 @@ function commonPricePost(req, res) {
 
 function modifyDataJson(req, res) {
   const { message, code } = services.bodyRequestIsEmpty(
-    req.body,
+    req,
     services.modifyDataJson,
   );
 
@@ -95,6 +96,21 @@ function myAsync(req, res) {
   wrapperRequest(req, res, discountAsync);
 }
 
+async function handleStreamRoutes(req) {
+  try {
+    const fileNotOptimise = await uploadCsv(req);
+    const filePath = await optimizeJson(fileNotOptimise);
+    return filePath;
+  } catch (err) {
+    console.error('Failed to upload CSV', err);
+
+    return {
+      code: 400,
+      message: 'the request is empty',
+    };
+  }
+}
+
 module.exports = {
   notFound,
   filter,
@@ -107,4 +123,5 @@ module.exports = {
   myPromise,
   myPromisify,
   myAsync,
+  handleStreamRoutes,
 };

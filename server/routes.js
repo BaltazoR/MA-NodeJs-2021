@@ -24,6 +24,9 @@ module.exports = (req, res) => {
   if (pathname === '/data' && method === 'POST')
     return controllers.modifyDataJson(req, res);
 
+  if (pathname === '/data' && method === 'PUT')
+    return controllers.modifyDataJson(req, res);
+
   if (
     pathname === '/discount/promise' &&
     (method === 'GET' || method === 'POST')
