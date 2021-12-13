@@ -362,6 +362,11 @@ function wrapperRequest(req, res, method) {
 // eslint-disable-next-line consistent-return
 async function uploadCsv(inputStream) {
   const timestamp = Date.now();
+
+  if (!fs.existsSync('./upload')) {
+    fs.mkdirSync('./upload');
+  }
+
   const filePath = `./upload/${timestamp}_not_optimize.json`;
   const outputStream = fs.createWriteStream(filePath);
   const csvToJson = createCsvToJson();
