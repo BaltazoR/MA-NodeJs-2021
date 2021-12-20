@@ -1,5 +1,5 @@
 // const util = require('util');
-const inputJson = require('../../data.json');
+const inputJson = require('../../../data.json');
 // const { discount } = require('../discount');
 
 function priceNormalization(price) {

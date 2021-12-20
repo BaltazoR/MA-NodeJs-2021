@@ -6,6 +6,7 @@ const { promisify } = require('util');
 const helpers = require('./helpers');
 // const dataJson = require('../data.json');
 const { createCsvToJson } = require('./helpers/csv-to-json');
+const { createCsv } = require('./helpers/csv-express');
 const { optimizeJson: jsonOptimize, calc } = require('./helpers/jsonOptimize');
 
 const promisifiedPipeline = promisify(pipeline);
@@ -50,13 +51,13 @@ function priceNormalization(price) {
 }
 
 function bodyRequestIsEmpty(req, callback) {
-  let output;
   let body = '';
 
   if (req.method === 'PUT') {
     try {
       const data = fs.readFileSync(req.filePath, 'utf8');
-      body = data;
+
+      body = JSON.parse(data);
     } catch (err) {
       console.error('ERROR:', err.message);
     }
@@ -64,24 +65,14 @@ function bodyRequestIsEmpty(req, callback) {
     body = req.body;
   }
 
-  if (body.length === 0) {
+  if (Object.keys(body).length === 0) {
     return {
       code: 400,
       message: 'the request is empty',
     };
   }
 
-  try {
-    output = JSON.parse(body);
-  } catch (err) {
-    console.error(err.message);
-    return {
-      code: 500,
-      message: err.message,
-    };
-  }
-
-  return callback(output);
+  return callback(body);
 }
 
 // eslint-disable-next-line consistent-return
@@ -144,33 +135,28 @@ function validator(query) {
   return true;
 }
 
-function filter(params) {
+function filter(query) {
   let message = '';
 
-  const filters = {};
-
-  if (params.toString().length === 0) {
+  if (query.toString().length === 0) {
     // eslint-disable-next-line import/no-dynamic-require
     const dataJson = require(`${latestFile()}`);
     message = dataJson;
   } else {
-    params.forEach((value, name) => {
-      filters[name] = value;
-    });
-
-    if (!validator(filters, rules)) {
+    if (!validator(query, rules)) {
       return {
         code: 400,
         message: 'Error input data validation',
       };
     }
+    // eslint-disable-next-line import/no-dynamic-require
     const dataJson = require(`${latestFile()}`);
     message = dataJson;
 
     // eslint-disable-next-line no-restricted-syntax
-    for (const element in filters) {
-      if (Object.hasOwnProperty.call(filters, element)) {
-        message = helpers.helper1.filter(message, element, filters[element]);
+    for (const element in query) {
+      if (Object.hasOwnProperty.call(query, element)) {
+        message = helpers.helper1.filter(message, element, query[element]);
       }
     }
   }
@@ -230,6 +216,7 @@ function checkValidation(input) {
 }
 
 function topPrice() {
+  // eslint-disable-next-line import/no-dynamic-require
   const dataJson = require(`${latestFile()}`);
   if (checkValidation(dataJson)) {
     return {
@@ -261,6 +248,7 @@ function topPricePost(body) {
 }
 
 function commonPrice() {
+  // eslint-disable-next-line import/no-dynamic-require
   const dataJson = require(`${latestFile()}`);
   if (checkValidation(dataJson)) {
     return {
@@ -299,8 +287,7 @@ function modifyDataJson(body) {
     };
   }
 
-  // const pathFileData = path.resolve('./data.json');
-
+  // const pathFileData = path.resolve('../../data.json');
   // const data = JSON.stringify(body);
   // fs.writeFileSync(pathFileData, data);
 
@@ -335,7 +322,7 @@ function wrapperRequest(req, res, method) {
       };
       return outResponse(res, data);
     }
-    input = JSON.parse(body);
+    input = body;
   }
 
   if (req.method === 'GET') {
@@ -372,7 +359,8 @@ async function uploadCsv(inputStream) {
 
   const filePath = `./upload/${timestamp}_not_optimize.json`;
   const outputStream = fs.createWriteStream(filePath);
-  const csvToJson = createCsvToJson();
+  const csvToJson = await createCsvToJson();
+  console.log(csvToJson);
   const optimizeFirst = jsonOptimize();
 
   try {
@@ -384,7 +372,7 @@ async function uploadCsv(inputStream) {
     );
     return filePath;
   } catch (err) {
-    console.error('CSV pipeline failed', err);
+    console.error('CSV pipeline failed', err.message);
   }
 }
 
@@ -416,6 +404,25 @@ async function optimizeJson(file) {
   }
 }
 
+// eslint-disable-next-line consistent-return
+function csvExpress(req) {
+  const timestamp = Date.now();
+
+  if (!fs.existsSync('./upload')) {
+    fs.mkdirSync('./upload');
+  }
+
+  const filePath = `./upload/${timestamp}.json`;
+  const content = createCsv(req);
+
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(content));
+    return filePath;
+  } catch (err) {
+    console.error('CSV upload failed', err.message);
+  }
+}
+
 module.exports = {
   notFound,
   filter,
@@ -429,4 +436,5 @@ module.exports = {
   wrapperRequest,
   uploadCsv,
   optimizeJson,
+  csvExpress,
 };
