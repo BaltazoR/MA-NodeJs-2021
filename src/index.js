@@ -1,10 +1,12 @@
 const http = require('http');
 
-const requestHandler = require('./server/requestHandler');
+const config = require('./config');
+const app = require('./app');
 
-const PORT = 3000;
+// const requestHandler = require('./server/requestHandler');
 
-const server = http.createServer(requestHandler);
+// const server = http.createServer(requestHandler);
+const server = http.createServer(app);
 
 function enableGracefulExit() {
   const exitHandler = (error) => {
@@ -29,7 +31,14 @@ function enableGracefulExit() {
   process.on('unhandledRejection', exitHandler);
 }
 
-enableGracefulExit();
-server.listen(PORT, () => {
-  console.log(`Server successfully started on port ${PORT}`);
-});
+const boot = async () => {
+  enableGracefulExit();
+  server.listen(config.server.PORT, () => {
+    console.log(
+      // eslint-disable-next-line max-len
+      `Server successfully started on port ${config.server.PORT} on host ${config.server.HOST}`,
+    );
+  });
+};
+
+boot();
