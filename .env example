@@ -3,3 +3,9 @@ HOST=localhost
 
 USERNAME=Masters
 PASSWORD=Academy
+
+DB_USER=Masters
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=shop
+DB_PASS=Academy

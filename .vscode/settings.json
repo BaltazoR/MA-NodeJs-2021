@@ -1,6 +1,15 @@
 {
     "cSpell.words": [
+        "createproduct",
+        "deleteproduct",
+        "getproduct",
+        "measurevalue",
         "middlewares",
-        "promisified"
+        "ossp",
+        "pricetype",
+        "pricevalue",
+        "promisified",
+        "timestamptz",
+        "updateproduct"
     ]
 }

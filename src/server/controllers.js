@@ -109,6 +109,30 @@ function myAsync(req, res) {
   wrapperRequest(req, res, discountAsync);
 }
 
+async function createProduct(req, res) {
+  const { message, code } = await services.createProduct(req);
+  res.statusCode = code;
+  res.json(message);
+}
+
+async function updateProduct(req, res) {
+  const { message, code } = await services.updateProduct(req);
+  res.statusCode = code;
+  res.json(message);
+}
+
+async function getProductId(req, res) {
+  const { message, code } = await services.getProductId(req);
+  res.statusCode = code;
+  res.json(message);
+}
+
+async function deleteProduct(req, res) {
+  const { message, code } = await services.deleteProduct(req);
+  res.statusCode = code;
+  res.json(message);
+}
+
 module.exports = {
   notFound,
   filter,
@@ -123,4 +147,8 @@ module.exports = {
   myAsync,
   handleStreamRoutes,
   uploadCsvExpress,
+  createProduct,
+  updateProduct,
+  getProductId,
+  deleteProduct,
 };

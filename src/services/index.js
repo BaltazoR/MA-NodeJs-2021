@@ -9,6 +9,9 @@ const { createCsvToJson } = require('./helpers/csv-to-json');
 const { createCsv } = require('./helpers/csv-express');
 const { optimizeJson: jsonOptimize, calc } = require('./helpers/jsonOptimize');
 
+const config = require('../config');
+const db = require('../db')(config.db);
+
 const promisifiedPipeline = promisify(pipeline);
 
 function latestFile() {
@@ -423,6 +426,73 @@ function csvExpress(req) {
   }
 }
 
+async function createProduct(req) {
+  const { body } = req;
+
+  if (body.length === 0) {
+    return {
+      code: 400,
+      message: 'the request is empty',
+    };
+  }
+
+  const message = await db.createProduct(body);
+
+  return {
+    code: 201,
+    message,
+  };
+}
+
+async function updateProduct(req) {
+  const { body } = req;
+  const { id } = req.params;
+
+  if (body.length === 0) {
+    return {
+      code: 400,
+      message: 'the request is empty',
+    };
+  }
+
+  const product = { id, ...body };
+
+  const message = await db.updateProduct(product);
+
+  return {
+    code: 200,
+    message,
+  };
+}
+
+async function getProductId(req) {
+  const { id } = req.params;
+
+  const message = await db.getProduct(id);
+
+  if (!message) {
+    return {
+      code: 404,
+      message: `product with id - ${id} not found`,
+    };
+  }
+  return {
+    code: 200,
+    message,
+  };
+}
+
+async function deleteProduct(req) {
+  const { id } = req.params;
+
+  const message = await db.deleteProduct(id);
+
+  return {
+    code: 200,
+    message,
+  };
+}
+
 module.exports = {
   notFound,
   filter,
@@ -437,4 +507,8 @@ module.exports = {
   uploadCsv,
   optimizeJson,
   csvExpress,
+  createProduct,
+  updateProduct,
+  getProductId,
+  deleteProduct,
 };
