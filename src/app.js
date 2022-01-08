@@ -16,6 +16,7 @@ app.use(bodyParser.json({ type: 'application/json' }));
 app.use(bodyParser.raw({ type: 'text/csv', limit: '10mb' }));
 
 app.use('/', routes.filters);
+app.use('/', routes.crud);
 app.use('/discount', routes.discount);
 app.use('/data', routes.data);
 
