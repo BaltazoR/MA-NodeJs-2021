@@ -1,7 +1,7 @@
 PORT=3000
 HOST=localhost
 
-USERNAME=Masters
+MY_USERNAME=Masters
 PASSWORD=Academy
 
 DB_USER=Masters
@@ -9,3 +9,5 @@ DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=shop
 DB_PASS=Academy
+
+DB_WRAPPER_TYPE=sequelize

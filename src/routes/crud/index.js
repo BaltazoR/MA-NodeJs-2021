@@ -15,6 +15,10 @@ router.get('/getproduct/:id', (req, res) => {
   controllers.getProductId(req, res);
 });
 
+router.get('/getproduct/', (req, res) => {
+  controllers.getProduct(req, res);
+});
+
 router.delete('/deleteproduct/:id', (req, res) => {
   controllers.deleteProduct(req, res);
 });

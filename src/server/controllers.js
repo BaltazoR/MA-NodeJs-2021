@@ -127,6 +127,12 @@ async function getProductId(req, res) {
   res.json(message);
 }
 
+async function getProduct(req, res) {
+  const { message, code } = await services.getProduct(req);
+  res.statusCode = code;
+  res.json(message);
+}
+
 async function deleteProduct(req, res) {
   const { message, code } = await services.deleteProduct(req);
   res.statusCode = code;
@@ -150,5 +156,6 @@ module.exports = {
   createProduct,
   updateProduct,
   getProductId,
+  getProduct,
   deleteProduct,
 };
