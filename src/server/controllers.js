@@ -97,6 +97,16 @@ function uploadCsvExpress(req, res) {
   res.json(message);
 }
 
+async function uploadCsvToDb(req, res) {
+  const { message, code } = await services.bodyIsEmpty(
+    req,
+    services.uploadCsvToDb,
+  );
+
+  res.code = code;
+  res.json(message);
+}
+
 function myPromise(req, res) {
   wrapperRequest(req, res, discountPromise);
 }
@@ -127,6 +137,12 @@ async function getProductId(req, res) {
   res.json(message);
 }
 
+async function getProduct(req, res) {
+  const { message, code } = await services.getProduct(req);
+  res.statusCode = code;
+  res.json(message);
+}
+
 async function deleteProduct(req, res) {
   const { message, code } = await services.deleteProduct(req);
   res.statusCode = code;
@@ -150,5 +166,7 @@ module.exports = {
   createProduct,
   updateProduct,
   getProductId,
+  getProduct,
   deleteProduct,
+  uploadCsvToDb,
 };

@@ -3,7 +3,7 @@ const http = require('http');
 const config = require('./config');
 const app = require('./app');
 
-const db = require('./db')(config.db);
+const db = require('./db');
 
 // const requestHandler = require('./server/requestHandler');
 
@@ -37,8 +37,7 @@ function enableGracefulExit() {
 const boot = async () => {
   enableGracefulExit();
   try {
-    await db.testConnection();
-    await db.dbInitialization();
+    await db.init();
 
     server.listen(config.server.PORT, () => {
       console.log(

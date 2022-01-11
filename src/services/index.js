@@ -7,10 +7,10 @@ const helpers = require('./helpers');
 // const dataJson = require('../data.json');
 const { createCsvToJson } = require('./helpers/csv-to-json');
 const { createCsv } = require('./helpers/csv-express');
+const arrayFromCsv = require('./helpers/csv');
 const { optimizeJson: jsonOptimize, calc } = require('./helpers/jsonOptimize');
 
-const config = require('../config');
-const db = require('../db')(config.db);
+const db = require('../db');
 
 const promisifiedPipeline = promisify(pipeline);
 
@@ -49,6 +49,15 @@ const rules = {
   pricePerItem: 'string',
 };
 
+const rulesDb = {
+  item: 'string',
+  type: 'string',
+  measure: 'string',
+  measurevalue: 'number',
+  pricetype: 'string',
+  pricevalue: 'string',
+};
+
 function priceNormalization(price) {
   return price.substring(1).replace(/,/, '.');
 }
@@ -67,6 +76,19 @@ function bodyRequestIsEmpty(req, callback) {
   } else {
     body = req.body;
   }
+
+  if (Object.keys(body).length === 0) {
+    return {
+      code: 400,
+      message: 'the request is empty',
+    };
+  }
+
+  return callback(body);
+}
+
+function bodyIsEmpty(req, callback) {
+  const { body } = req;
 
   if (Object.keys(body).length === 0) {
     return {
@@ -131,6 +153,68 @@ function validator(query) {
             }
             return false;
           }
+        }
+      }
+    }
+  }
+  return true;
+}
+
+// eslint-disable-next-line consistent-return
+function validatorDb(query) {
+  if (Object.keys(query).length === 0) {
+    return false;
+  }
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const qKey in query) {
+    if (Object.hasOwnProperty.call(query, qKey)) {
+      let result = 0;
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const rKey in rulesDb) {
+        if (Object.hasOwnProperty.call(rulesDb, rKey)) {
+          if (rKey === qKey) result = 1;
+        }
+      }
+      if (result === 0) return false;
+    }
+  }
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key in rulesDb) {
+    if (Object.hasOwnProperty.call(rulesDb, key)) {
+      if (query[key]) {
+        if (
+          key === 'item' ||
+          key === 'type' ||
+          key === 'measure' ||
+          key === 'pricetype'
+        ) {
+          // eslint-disable-next-line no-param-reassign
+          query[key] = String(query[key]);
+        }
+
+        if (key === 'measurevalue') {
+          // eslint-disable-next-line no-param-reassign
+          query[key] = Number(query[key]);
+          // eslint-disable-next-line no-restricted-globals
+          if (isNaN(query[key])) {
+            return false;
+          }
+        }
+        // eslint-disable-next-line valid-typeof
+        if (typeof query[key] === rulesDb[key]) {
+          if (key === 'pricevalue') {
+            let price = query[key];
+            if (!(price.search(/^\$([0-9]+([,.][0-9]*)?|[0-9]+)/) === -1)) {
+              price = priceNormalization(price);
+              if (Number(price)) return true;
+            }
+            return false;
+          }
+        } else {
+          return false;
         }
       }
     }
@@ -210,6 +294,7 @@ function filterPost(body) {
 
 function checkValidation(input) {
   let resultOfValidation = false;
+
   input.forEach((element) => {
     if (!validator(element, rules)) {
       resultOfValidation = true;
@@ -426,6 +511,43 @@ function csvExpress(req) {
   }
 }
 
+async function uploadCsvToDb(body) {
+  const content = arrayFromCsv(body);
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const element of content) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      let res = await db.findProduct(element);
+
+      if (res) {
+        const { id } = res;
+        const measurevalue =
+          Number(res.measurevalue) + Number(element.measurevalue);
+        const product = { id, measurevalue };
+        // eslint-disable-next-line no-await-in-loop
+        await db.updateProduct(product);
+      } else {
+        // eslint-disable-next-line no-await-in-loop
+        await db.createProduct(element);
+      }
+      res = '';
+    } catch (err) {
+      console.error(err.message || err);
+      return {
+        code: 500,
+        message: err.message || err,
+      };
+    }
+  }
+
+  const output = {
+    code: 200,
+    message: 'Product upload successfully',
+  };
+  return output;
+}
+
 async function createProduct(req) {
   const { body } = req;
 
@@ -433,6 +555,13 @@ async function createProduct(req) {
     return {
       code: 400,
       message: 'the request is empty',
+    };
+  }
+
+  if (!validatorDb(body, rules)) {
+    return {
+      code: 400,
+      message: 'Error input data validation',
     };
   }
 
@@ -455,6 +584,13 @@ async function updateProduct(req) {
     };
   }
 
+  if (!validatorDb(body, rules)) {
+    return {
+      code: 400,
+      message: 'Error input data validation',
+    };
+  }
+
   const product = { id, ...body };
 
   const message = await db.updateProduct(product);
@@ -474,6 +610,21 @@ async function getProductId(req) {
     return {
       code: 404,
       message: `product with id - ${id} not found`,
+    };
+  }
+  return {
+    code: 200,
+    message,
+  };
+}
+
+async function getProduct() {
+  const message = await db.getAllProduct();
+
+  if (!message) {
+    return {
+      code: 404,
+      message: 'products not found',
     };
   }
   return {
@@ -510,5 +661,8 @@ module.exports = {
   createProduct,
   updateProduct,
   getProductId,
+  getProduct,
   deleteProduct,
+  uploadCsvToDb,
+  bodyIsEmpty,
 };
