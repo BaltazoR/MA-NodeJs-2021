@@ -70,4 +70,5 @@ module.exports = {
   updateProduct: async (product) =>
     funcWrapper(dbWrapper().updateProduct)(product),
   deleteProduct: async (id) => funcWrapper(dbWrapper().deleteProduct)(id),
+  findProduct: async (product) => funcWrapper(dbWrapper().findProduct)(product),
 };

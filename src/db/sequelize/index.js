@@ -74,7 +74,7 @@ module.exports = (config) => {
 
         const res = await db.Product.create(p);
 
-        console.log(`DEBUG: New product created: ${JSON.stringify(res)}`);
+        // console.log(`DEBUG: New product created: ${JSON.stringify(res)}`);
         return res;
       } catch (err) {
         console.error(err.message || err);
@@ -132,7 +132,7 @@ module.exports = (config) => {
           returning: true,
         });
 
-        console.log(`DEBUG: Product updated: ${JSON.stringify(res[1][0])}`);
+        // console.log(`DEBUG: Product updated: ${JSON.stringify(res[1][0])}`);
         return res[1][0];
       } catch (err) {
         console.error(err.message || err);
@@ -150,6 +150,28 @@ module.exports = (config) => {
         await db.Product.update({ deleted_at: Date.now() }, { where: { id } });
 
         return `delete product with id - ${id} successfully`;
+      } catch (err) {
+        console.error(err.message || err);
+        throw err;
+      }
+    },
+
+    findProduct: async (product) => {
+      try {
+        if (!product) {
+          throw new Error('ERROR: No product id defined');
+        }
+
+        const res = await db.Product.findOne({
+          where: {
+            item: product.item,
+            type: product.type,
+            pricevalue: product.pricevalue,
+            deleted_at: { [Sequelize.Op.is]: null },
+          },
+        });
+
+        return res;
       } catch (err) {
         console.error(err.message || err);
         throw err;

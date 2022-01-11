@@ -38,12 +38,6 @@ const boot = async () => {
   enableGracefulExit();
   try {
     await db.init();
-    console.log(`Now DB type is ${db.getType()}`);
-
-    // db.setType('sequelize');
-    // console.log(`Now DB type is ${db.getType()}`);
-
-    // await db.dbInitialization();
 
     server.listen(config.server.PORT, () => {
       console.log(

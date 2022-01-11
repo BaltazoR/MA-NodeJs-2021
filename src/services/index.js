@@ -7,6 +7,7 @@ const helpers = require('./helpers');
 // const dataJson = require('../data.json');
 const { createCsvToJson } = require('./helpers/csv-to-json');
 const { createCsv } = require('./helpers/csv-express');
+const arrayFromCsv = require('./helpers/csv');
 const { optimizeJson: jsonOptimize, calc } = require('./helpers/jsonOptimize');
 
 const db = require('../db');
@@ -75,6 +76,19 @@ function bodyRequestIsEmpty(req, callback) {
   } else {
     body = req.body;
   }
+
+  if (Object.keys(body).length === 0) {
+    return {
+      code: 400,
+      message: 'the request is empty',
+    };
+  }
+
+  return callback(body);
+}
+
+function bodyIsEmpty(req, callback) {
+  const { body } = req;
 
   if (Object.keys(body).length === 0) {
     return {
@@ -281,10 +295,7 @@ function filterPost(body) {
 function checkValidation(input) {
   let resultOfValidation = false;
 
-  const i = Object.keys(input).map((key) => [key, input[key]]);
-  // console.log(i);
-
-  i.forEach((element) => {
+  input.forEach((element) => {
     if (!validator(element, rules)) {
       resultOfValidation = true;
     }
@@ -500,6 +511,43 @@ function csvExpress(req) {
   }
 }
 
+async function uploadCsvToDb(body) {
+  const content = arrayFromCsv(body);
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const element of content) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      let res = await db.findProduct(element);
+
+      if (res) {
+        const { id } = res;
+        const measurevalue =
+          Number(res.measurevalue) + Number(element.measurevalue);
+        const product = { id, measurevalue };
+        // eslint-disable-next-line no-await-in-loop
+        await db.updateProduct(product);
+      } else {
+        // eslint-disable-next-line no-await-in-loop
+        await db.createProduct(element);
+      }
+      res = '';
+    } catch (err) {
+      console.error(err.message || err);
+      return {
+        code: 500,
+        message: err.message || err,
+      };
+    }
+  }
+
+  const output = {
+    code: 200,
+    message: 'Product upload successfully',
+  };
+  return output;
+}
+
 async function createProduct(req) {
   const { body } = req;
 
@@ -615,4 +663,6 @@ module.exports = {
   getProductId,
   getProduct,
   deleteProduct,
+  uploadCsvToDb,
+  bodyIsEmpty,
 };

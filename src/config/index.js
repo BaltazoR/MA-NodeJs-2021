@@ -12,7 +12,7 @@ const auth = {
 };
 
 const db = {
-  defaultType: process.env.DB_WRAPPER_TYPE || 'pg',
+  defaultType: process.env.DB_WRAPPER_TYPE || 'sequelize',
   config: {
     pg: {
       user: process.env.DB_USER || fatal('FATAL: DB_USER is no defined'),
