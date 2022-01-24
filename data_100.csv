@@ -1,0 +1,101 @@
+item,type,measure,measureValue,priceType,priceValue
+watermelon,Mini Piccolo,quantity,46,pricePerItem,$8
+orange,Satsuma,weight,19,pricePerKilo,$3
+apple,McIntosh,weight,9,pricePerKilo,$6
+watermelon,Allsweet,quantity,8,pricePerItem,$8
+watermelon,Florida Giant,quantity,8,pricePerItem,"$9,99"
+apple,Fuji,weight,2,pricePerKilo,"$4,99"
+watermelon,Carolina Cross #183,quantity,30,pricePerItem,$12
+apple,Granny,weight,9,pricePerKilo,"$4,99"
+orange,Naruto,weight,5,pricePerKilo,$3
+apple,McIntosh,weight,16,pricePerKilo,$6
+orange,Bergamot,weight,2,pricePerKilo,$3
+orange,Naruto,weight,19,pricePerKilo,$3
+cherry,Van,weight,1,pricePerKilo,$3
+apple,Cosmic Crisp,weight,7,pricePerKilo,$6
+apple,McIntosh,weight,1,pricePerKilo,$6
+cherry,Red,weight,6,pricePerKilo,$3
+orange,Golden Midget,weight,15,pricePerKilo,"$2,99"
+apple,Fuji,weight,14,pricePerKilo,$6
+watermelon,Carolina Cross #183,quantity,44,pricePerItem,"$9,99"
+orange,Clementine,weight,18,pricePerKilo,$3
+watermelon,Yellow Petite,quantity,30,pricePerItem,"$9,99"
+apple,Jonagold,weight,17,pricePerKilo,$6
+cherry,Red,weight,16,pricePerKilo,$4
+apple,Gala,weight,14,pricePerKilo,"$4,99"
+cherry,Stardust,weight,4,pricePerKilo,"$5,99"
+cherry,Attika,weight,10,pricePerKilo,"$5,99"
+apple,Red Delicious,weight,20,pricePerKilo,$6
+cherry,Sweetheart,weight,1,pricePerKilo,$3
+cherry,Benton,weight,14,pricePerKilo,$3
+watermelon,Yellow Petite,quantity,43,pricePerItem,$12
+cherry,Kiona,weight,12,pricePerKilo,$4
+orange,Nanshodaidai,weight,7,pricePerKilo,"$2,99"
+orange,Blood or pigmented,weight,4,pricePerKilo,$3
+watermelon,Orangeglo,quantity,25,pricePerItem,"$9,99"
+orange,Clementine,weight,4,pricePerKilo,"$2,99"
+orange,Trifoliate,weight,19,pricePerKilo,$3
+apple,Cosmic Crisp,weight,13,pricePerKilo,$6
+watermelon,Yellow Petite,quantity,10,pricePerItem,"$9,99"
+cherry,Regina,weight,10,pricePerKilo,"$5,99"
+cherry,Dark Red,weight,18,pricePerKilo,$3
+orange,Bergamot,weight,3,pricePerKilo,$3
+cherry,Early Robin,weight,2,pricePerKilo,$3
+cherry,Skeena,weight,5,pricePerKilo,"$5,99"
+apple,Cosmic Crisp,weight,9,pricePerKilo,$6
+orange,Bergamot,weight,1,pricePerKilo,"$2,99"
+apple,Golden Delicious,weight,5,pricePerKilo,$5
+apple,Granny,weight,17,pricePerKilo,$6
+orange,Naruto,weight,1,pricePerKilo,$3
+watermelon,Orangeglo,quantity,34,pricePerItem,$8
+cherry,Attika,weight,6,pricePerKilo,$4
+orange,Blood or pigmented,weight,1,pricePerKilo,$3
+watermelon,Sweet Beauty,quantity,28,pricePerItem,$12
+cherry,Sweetheart,weight,3,pricePerKilo,$4
+cherry,Morello,weight,13,pricePerKilo,$4
+watermelon,Allsweet,quantity,12,pricePerItem,$8
+cherry,Red,weight,20,pricePerKilo,$3
+watermelon,Triple Crown,quantity,34,pricePerItem,"$9,99"
+apple,Pink Lady,weight,9,pricePerKilo,"$4,99"
+apple,Cosmic Crisp,weight,3,pricePerKilo,"$4,99"
+orange,Nanshodaidai,weight,13,pricePerKilo,$3
+cherry,Early Robin,weight,9,pricePerKilo,$4
+cherry,Tieton,weight,6,pricePerKilo,$3
+watermelon,Triple Crown,quantity,11,pricePerItem,$8
+cherry,Bing,weight,17,pricePerKilo,$4
+orange,Trifoliate,weight,2,pricePerKilo,"$2,99"
+cherry,Attika,weight,1,pricePerKilo,"$5,99"
+apple,Red Delicious,weight,10,pricePerKilo,"$4,99"
+apple,Honeycrisp,weight,13,pricePerKilo,$6
+orange,Blood or pigmented,weight,18,pricePerKilo,"$2,99"
+apple,Jonagold,weight,8,pricePerKilo,$6
+apple,Fuji,weight,1,pricePerKilo,$5
+watermelon,Yellow Petite,quantity,22,pricePerItem,"$9,99"
+cherry,Bing,weight,4,pricePerKilo,$3
+apple,Golden Delicious,weight,2,pricePerKilo,$6
+apple,Golden Delicious,weight,15,pricePerKilo,$6
+orange,Nanshodaidai,weight,9,pricePerKilo,$3
+orange,Common,weight,12,pricePerKilo,"$2,99"
+watermelon,Orange Crisp,quantity,15,pricePerItem,"$9,99"
+apple,Red Delicious,weight,9,pricePerKilo,$6
+watermelon,Sweet Princess,quantity,9,pricePerItem,"$9,99"
+watermelon,Florida Giant,quantity,6,pricePerItem,"$9,99"
+cherry,Sweetheart,weight,3,pricePerKilo,$3
+apple,Pink Lady,weight,15,pricePerKilo,$5
+apple,Granny,weight,16,pricePerKilo,$6
+apple,Gala,weight,17,pricePerKilo,$5
+orange,Satsuma,weight,10,pricePerKilo,$3
+watermelon,Allsweet,quantity,7,pricePerItem,$12
+cherry,Bing,weight,3,pricePerKilo,$4
+cherry,Montmorency,weight,10,pricePerKilo,"$5,99"
+watermelon,Klondike Blue Ribbon Striped,quantity,15,pricePerItem,"$9,99"
+apple,Jonagold,weight,6,pricePerKilo,$6
+orange,Acid-less ,weight,15,pricePerKilo,$3
+watermelon,Golden Midget,quantity,8,pricePerItem,"$9,99"
+orange,Seville,weight,17,pricePerKilo,$3
+apple,Jonagold,weight,19,pricePerKilo,$6
+apple,Jonagold,weight,9,pricePerKilo,$6
+watermelon,Klondike Blue Ribbon Striped,quantity,5,pricePerItem,$12
+apple,Fuji,weight,17,pricePerKilo,$6
+orange,Satsuma,weight,15,pricePerKilo,"$2,99"
+orange,Naruto,weight,2,pricePerKilo,$3

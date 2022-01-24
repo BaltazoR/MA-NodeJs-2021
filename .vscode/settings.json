@@ -1,16 +1,21 @@
 {
-    "cSpell.words": [
-        "createproduct",
-        "deleteproduct",
-        "getproduct",
-        "measurevalue",
-        "middlewares",
-        "ossp",
-        "pricetype",
-        "pricevalue",
-        "promisified",
-        "timestamptz",
-        "updateproduct",
-        "UUIDV"
-    ]
+  "cSpell.words": [
+    "addorder",
+    "createproduct",
+    "deleteproduct",
+    "getorder",
+    "getorders",
+    "getproduct",
+    "measurevalue",
+    "middlewares",
+    "ossp",
+    "pricetype",
+    "pricevalue",
+    "promisified",
+    "sequelize",
+    "timestamptz",
+    "updateproduct",
+    "UUIDV"
+  ],
+  "cSpell.language": "en,uk,en-GB,ru"
 }

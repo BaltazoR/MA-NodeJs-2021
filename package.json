@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node ./src/index.js"
+    "start": "node ./src/index.js",
+    "sequelize:migrate:make": "./node_modules/.bin/sequelize --migrations-path=./src/db/sequelize/migrations/ migration:generate --name",
+    "sequelize:migrate:latest": "./node_modules/.bin/sequelize --migrations-path=./src/db/sequelize/migrations/ --config=./src/db/sequelize/config/config.js db:migrate",
+    "sequelize:migrate:undo": "./node_modules/.bin/sequelize --migrations-path=./src/db/sequelize/migrations/ --config=./src/db/sequelize/config/config.js db:migrate:undo"
   },
   "author": "BaltazoR",
   "license": "ISC",
@@ -16,6 +19,7 @@
     "prettier": "2.4.1"
   },
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.19.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",

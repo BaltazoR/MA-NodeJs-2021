@@ -30,7 +30,7 @@ const db = {
       database: process.env.DB_NAME || fatal('FATAL: DB_NAME is no defined'),
       password: process.env.DB_PASS || fatal('FATAL: DB_PASS is no defined'),
       logging: false,
-      quoteIdentifiers: false,
+      // quoteIdentifiers: false,
       pool: {
         min: 0,
         max: 10,

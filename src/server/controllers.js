@@ -149,6 +149,30 @@ async function deleteProduct(req, res) {
   res.json(message);
 }
 
+async function registration(req, res) {
+  const { message, code } = await services.registration(req);
+  res.statusCode = code;
+  res.json(message);
+}
+
+async function login(req, res) {
+  const { message, code } = await services.login(req);
+  res.statusCode = code;
+  res.json(message);
+}
+
+async function addOrder(req, res) {
+  const { message, code } = await services.addOrder(req);
+  res.statusCode = code;
+  res.json(message);
+}
+
+async function getOrder(req, res) {
+  const { message, code } = await services.getOrder(req);
+  res.statusCode = code;
+  res.json(message);
+}
+
 module.exports = {
   notFound,
   filter,
@@ -169,4 +193,8 @@ module.exports = {
   getProduct,
   deleteProduct,
   uploadCsvToDb,
+  registration,
+  login,
+  addOrder,
+  getOrder,
 };
