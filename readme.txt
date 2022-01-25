@@ -48,7 +48,7 @@
       }
 
 8. Далее создаем заказ
-    Endpoint: POST /createproduct
+    Endpoint: POST /basket/addorder
 
     BODY:
       {
