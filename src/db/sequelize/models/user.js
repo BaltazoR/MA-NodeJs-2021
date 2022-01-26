@@ -1,25 +1,18 @@
 module.exports = (sequelize, DataTypes) => {
-  const Product = sequelize.define(
-    'Product',
+  const User = sequelize.define(
+    'User',
     {
       id: {
         primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: sequelize.literal('uuid_generate_v4()'),
       },
-      measure: {
+      email: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
       },
-      measurevalue: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      pricetype: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      pricevalue: {
+      password: {
         type: DataTypes.STRING,
         allowNull: false,
       },
@@ -35,11 +28,9 @@ module.exports = (sequelize, DataTypes) => {
     },
   );
 
-  Product.associate = (models) => {
-    Product.belongsTo(models.Item);
-    Product.belongsTo(models.Type);
-    Product.hasMany(models.OrderItem);
+  User.associate = (models) => {
+    User.hasMany(models.Order);
   };
 
-  return Product;
+  return User;
 };

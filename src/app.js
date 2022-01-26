@@ -7,18 +7,21 @@ const { auth, errorHandler } = require('./server/middlewares');
 
 const app = express();
 
-app.use(auth);
-
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(bodyParser.json({ type: 'application/json' }));
 
 app.use(bodyParser.raw({ type: 'text/csv', limit: '10mb' }));
 
+app.use('/', routes.user);
+
+app.use(auth);
+
 app.use('/', routes.filters);
 app.use('/', routes.crud);
 app.use('/discount', routes.discount);
 app.use('/data', routes.data);
+app.use('/basket', routes.order);
 
 app.use((req, res, next) => {
   next(new Error(404));

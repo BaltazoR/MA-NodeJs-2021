@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const { pipeline } = require('stream');
 const { promisify } = require('util');
+const bcrypt = require('bcrypt');
 const helpers = require('./helpers');
 // const dataJson = require('../data.json');
 const { createCsvToJson } = require('./helpers/csv-to-json');
@@ -644,6 +645,176 @@ async function deleteProduct(req) {
   };
 }
 
+async function registration(req) {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return {
+      code: 404,
+      message: 'Empty email or password',
+    };
+  }
+
+  const candidate = await db.findUser(email);
+  if (candidate) {
+    return {
+      code: 404,
+      message: `User with email - ${email} already exists`,
+    };
+  }
+
+  const hashPassword = await bcrypt.hash(password, 5);
+  const user = {
+    email,
+    password: hashPassword,
+  };
+  const res = await db.createUser(user);
+
+  return {
+    code: 201,
+    message: `User - ${res.email} created successfully`,
+  };
+}
+
+async function login(req) {
+  const { email, password } = req.body;
+  const user = await db.findUser(email);
+  if (!user) {
+    return {
+      code: 404,
+      message: `User with email - ${email} not found`,
+    };
+  }
+  const comparePassword = bcrypt.compareSync(password, user.password);
+  if (!comparePassword) {
+    return {
+      code: 403,
+      message: 'Bad username or password',
+    };
+  }
+  const res = {
+    id: user.id,
+    username: email,
+    password: user.password,
+  };
+
+  return {
+    code: 200,
+    message: res,
+  };
+}
+
+async function addOrder(req) {
+  const userId = req?.user?.id;
+  const { productId, orderId, measurevalue } = req.body;
+  let order;
+
+  if (!userId || !productId) {
+    return {
+      code: 404,
+      message: 'Not enough parameters for request',
+    };
+  }
+
+  const product = await db.getProduct(productId);
+
+  if (!product) {
+    return {
+      code: 404,
+      message: 'Product does not exist',
+    };
+  }
+
+  const diffProduct = product.measurevalue - measurevalue;
+
+  if (diffProduct < 0) {
+    return {
+      code: 404,
+      // eslint-disable-next-line max-len
+      message: `Not enough quantity of product. We can offer - ${product.measurevalue}`,
+    };
+  }
+
+  if (!orderId) {
+    const unfinishedOrder = await db.getOrder({
+      UserId: userId,
+      completed: false,
+    });
+
+    if (!unfinishedOrder) {
+      order = await db.createOrder(userId);
+    } else {
+      order = unfinishedOrder;
+    }
+  } else {
+    order = await db.getOrder(orderId);
+  }
+
+  if (!order && order.completed) {
+    return {
+      code: 404,
+      message: 'Order does not exist or completed',
+    };
+  }
+
+  let orderItem = await db.findOrderItem({
+    OrderId: order.id,
+    ProductId: product.id,
+  });
+
+  if (orderItem) {
+    const diffItem = orderItem.measurevalue + measurevalue;
+
+    orderItem = await db.updateOrderItem({
+      id: orderItem.id,
+      measurevalue: diffItem,
+    });
+  } else {
+    orderItem = await db.createOrderItem({
+      measurevalue,
+      ProductId: productId,
+      OrderId: order.id,
+    });
+  }
+
+  if (orderItem) {
+    await db.updateProduct({
+      id: productId,
+      measurevalue: diffProduct,
+    });
+  }
+  return {
+    code: 201,
+    message: orderItem,
+  };
+}
+
+async function getOrder(req) {
+  const { id: UserId } = req.user;
+
+  const order = await db.getOrder({
+    UserId,
+    completed: false,
+  });
+
+  if (!order) {
+    return {
+      code: 404,
+      message: 'You have no outstanding orders',
+    };
+  }
+
+  const orderItems = await db.findOrderItems({
+    OrderId: order.id,
+  });
+
+  const message = orderItems;
+
+  return {
+    code: 200,
+    message,
+  };
+}
+
 module.exports = {
   notFound,
   filter,
@@ -665,4 +836,8 @@ module.exports = {
   deleteProduct,
   uploadCsvToDb,
   bodyIsEmpty,
+  registration,
+  login,
+  addOrder,
+  getOrder,
 };

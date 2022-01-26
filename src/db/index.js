@@ -71,4 +71,16 @@ module.exports = {
     funcWrapper(dbWrapper().updateProduct)(product),
   deleteProduct: async (id) => funcWrapper(dbWrapper().deleteProduct)(id),
   findProduct: async (product) => funcWrapper(dbWrapper().findProduct)(product),
+  findUser: async (email) => funcWrapper(dbWrapper().findUser)(email),
+  createUser: async (user) => funcWrapper(dbWrapper().createUser)(user),
+  createOrder: async (UserId) => funcWrapper(dbWrapper().createOrder)(UserId),
+  getOrder: async (order) => funcWrapper(dbWrapper().getOrder)(order),
+  createOrderItem: async (orderItem) =>
+    funcWrapper(dbWrapper().createOrderItem)(orderItem),
+  findOrderItem: async (orderId) =>
+    funcWrapper(dbWrapper().findOrderItem)(orderId),
+  findOrderItems: async (orderId) =>
+    funcWrapper(dbWrapper().findOrderItems)(orderId),
+  updateOrderItem: async (orderItem) =>
+    funcWrapper(dbWrapper().updateOrderItem)(orderItem),
 };
