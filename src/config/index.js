@@ -4,6 +4,11 @@ const { fatal } = require('../utils');
 const server = {
   PORT: process.env.PORT || 3000,
   HOST: process.env.HOST || 'localhost',
+  token: {
+    SECRET_KEY:
+      process.env.SECRET_KEY || fatal('FATAL: SECRET_KEY is no defined'),
+    EXPIRES_IN: process.env.EXPIRES_IN || '1h',
+  },
 };
 
 const auth = {

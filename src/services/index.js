@@ -4,6 +4,8 @@ const fs = require('fs');
 const { pipeline } = require('stream');
 const { promisify } = require('util');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
 const helpers = require('./helpers');
 // const dataJson = require('../data.json');
 const { createCsvToJson } = require('./helpers/csv-to-json');
@@ -12,6 +14,12 @@ const arrayFromCsv = require('./helpers/csv');
 const { optimizeJson: jsonOptimize, calc } = require('./helpers/jsonOptimize');
 
 const db = require('../db');
+
+const {
+  server: {
+    token: { SECRET_KEY, EXPIRES_IN },
+  },
+} = require('../config');
 
 const promisifiedPipeline = promisify(pipeline);
 
@@ -39,6 +47,12 @@ function notFound() {
     code: 404,
     message: 'page not found',
   };
+}
+
+function generateJwt(id, email) {
+  return jwt.sign({ id, email }, SECRET_KEY, {
+    expiresIn: EXPIRES_IN,
+  });
 }
 
 const rules = {
@@ -691,10 +705,16 @@ async function login(req) {
       message: 'Bad username or password',
     };
   }
+
+  const token = generateJwt(user.id, email);
+
+  await db.updateUser({ id: user.id, token });
+
   const res = {
-    id: user.id,
-    username: email,
-    password: user.password,
+    token,
+    // id: user.id,
+    // username: email,
+    // password: user.password,
   };
 
   return {

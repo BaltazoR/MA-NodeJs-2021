@@ -21,15 +21,15 @@
         "password": "12345"
       }
 
-  В Response получаем юзера(email) и хэшированный пароль, который будем 
-  использовать при всех последующих действиях (Basic Auth).
+  В Response получаем токен, который будем 
+  использовать при всех последующих действиях (Bearer token).
 
   Response:
-    {
-      "id": "fae25948-6826-4ed7-99dd-934139636e8a",
-      "username": "user@localhost.com",
-      "password": "$2b$05$hhiUNG2CD/yP7F3BVNdag.GVJJ5CLgWe7ii9xDVowG25mYPkyiqli"
-    }
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+    eyJpZCI6ImZhZTI1OTQ4LTY4MjYtNGVkNy05OWRkLTkzNDEzOTYzNmU4YSIsImVtYWlsIjoidXNlckBsb2NhbGhvc3QuY29tIiwiaWF0IjoxNjQzNTg2MTcxLCJleHAiOjE2NDM2NzI1NzF9.
+    0naRk3UJKzR2ldy07PXw4rxbTCyAErozqLTELkPgzwQ"
+}
 
 7. Загружаем список продуктов с файла data_100.csv
     Endpoint: PUT /data

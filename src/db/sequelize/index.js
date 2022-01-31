@@ -434,6 +434,19 @@ module.exports = (config) => {
       }
     },
 
+    updateUser: async ({ id, ...user }) => {
+      try {
+        const res = await db.User.update(user, {
+          where: { id },
+          returning: true,
+        });
+        return res;
+      } catch (err) {
+        console.error(err.message || err);
+        throw err;
+      }
+    },
+
     //
   };
 };

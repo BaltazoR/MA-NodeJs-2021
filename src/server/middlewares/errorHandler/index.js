@@ -1,5 +1,9 @@
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (error, req, res, next) => {
+  if (error.message === '401') {
+    return res.status(401).send({ error: 'Unauthorized.' });
+  }
+
   if (error.message === '403') {
     return res.status(403).send({ error: 'Authentication required.' });
   }
