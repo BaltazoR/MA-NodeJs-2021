@@ -1,5 +1,16 @@
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (error, req, res, next) => {
+  if (error.message === 'jwt expired') {
+    return res.status(401).send({ error: 'Access token expired.' });
+  }
+
+  if (error.message === 'refresh') {
+    return res.status(401).send({ error: 'Use only access token.' });
+  }
+
+  if (error.message === 'access') {
+    return res.status(401).send({ error: 'Use only refresh token.' });
+  }
   if (error.message === '401') {
     return res.status(401).send({ error: 'Unauthorized.' });
   }

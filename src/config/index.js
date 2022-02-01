@@ -7,7 +7,8 @@ const server = {
   token: {
     SECRET_KEY:
       process.env.SECRET_KEY || fatal('FATAL: SECRET_KEY is no defined'),
-    EXPIRES_IN: process.env.EXPIRES_IN || '1h',
+    REFRESH_EXPIRES_IN: process.env.REFRESH_EXPIRES_IN || '7d',
+    ACCESS_EXPIRES_IN: process.env.ACCESS_EXPIRES_IN || '30m',
   },
 };
 

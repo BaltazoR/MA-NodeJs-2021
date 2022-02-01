@@ -6,8 +6,6 @@ const {
   },
 } = require('../../../config');
 
-const db = require('../../../db');
-
 const auth = async (req, res, next) => {
   try {
     const token = req?.headers?.authorization?.split(' ')[1];
@@ -15,16 +13,17 @@ const auth = async (req, res, next) => {
       return next(new Error(401));
     }
 
-    const decoded = jwt.verify(token, SECRET_KEY);
+    const decoded = jwt.verify(token, SECRET_KEY, (err, resp) => {
+      if (err?.message === 'jwt expired') return err.message;
+      return resp;
+    });
 
-    const user = await db.findUser(decoded.email);
+    if (decoded === 'jwt expired') return next(new Error(decoded));
 
-    if (user.token === token) {
-      req.user = { id: decoded.id, username: decoded.email };
-      return next();
-    }
+    if (decoded?.type === 'refresh') return next(new Error('refresh'));
 
-    return next(new Error(401));
+    req.user = { id: decoded.id, username: decoded.email };
+    return next();
   } catch (e) {
     return next(new Error(401));
   }

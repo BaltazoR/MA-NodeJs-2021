@@ -11,4 +11,8 @@ router.post('/login', (req, res) => {
   controllers.login(req, res);
 });
 
+router.get('/refresh', (req, res) => {
+  controllers.updRefreshToken(req, res);
+});
+
 module.exports = router;

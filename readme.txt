@@ -21,15 +21,34 @@
         "password": "12345"
       }
 
-  В Response получаем токен, который будем 
-  использовать при всех последующих действиях (Bearer token).
-
   Response:
 {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
-    eyJpZCI6ImZhZTI1OTQ4LTY4MjYtNGVkNy05OWRkLTkzNDEzOTYzNmU4YSIsImVtYWlsIjoidXNlckBsb2NhbGhvc3QuY29tIiwiaWF0IjoxNjQzNTg2MTcxLCJleHAiOjE2NDM2NzI1NzF9.
-    0naRk3UJKzR2ldy07PXw4rxbTCyAErozqLTELkPgzwQ"
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+    eyJ0eXBlIjoicmVmcmVzaCIsImlkIjoiNDRhZjFjNWYtNDBhMy00YzM4LWEyMDQtNzg0Y2UzNjkzOTYwIiwiZW1haWwiOiJ1c2VyQGxvY2FsaG9zdC5jb20iLCJpYXQiOjE2NDM3NDAxNzYsImV4cCI6MTY0MzgyNjU3Nn0.
+    uYj8vydsFW6XD2jYND0vSvnDmMPCMOv2_XJm1qk2oGo",
+
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+    eyJ0eXBlIjoiYWNjZXNzIiwiaWQiOiI0NGFmMWM1Zi00MGEzLTRjMzgtYTIwNC03ODRjZTM2OTM5NjAiLCJlbWFpbCI6InVzZXJAbG9jYWxob3N0LmNvbSIsImlhdCI6MTY0Mzc0MDE3NiwiZXhwIjoxNjQzNzQwMzU2fQ.
+    MjJqqmm1tLZzK1cOJTRUgAsfZE4prg8m2CNNecs1Fhk"
 }
+
+  В Response получаем 2ва токена - AccessToken и RefreshToken.
+  AccessToken будем использовать при всех последующих действиях (Bearer token). 
+  Он имеет короткий срок жизни. По его истечению необходимо его обновить. 
+  
+  * Для обновления AccessToken воспользуемся RefreshToken-ом, перейдя на эндпоинт:
+
+      Endpoint: GET /refresh
+
+      В хэдэре (Bearer token) передаем RefreshToken. После этого в ответе получаем 
+        новую пару токенов.
+
+      Response:
+
+      {
+        "refreshToken": "...",
+        "accessToken": "..."
+      }
 
 7. Загружаем список продуктов с файла data_100.csv
     Endpoint: PUT /data
