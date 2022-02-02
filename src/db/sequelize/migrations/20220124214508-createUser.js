@@ -15,6 +15,10 @@ module.exports = {
         type: Sequelize.DataTypes.STRING,
         allowNull: false,
       },
+      token: {
+        type: Sequelize.DataTypes.STRING,
+        allowNull: true,
+      },
       created_at: {
         type: Sequelize.DataTypes.DATE,
         allowNull: false,

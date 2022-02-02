@@ -83,4 +83,5 @@ module.exports = {
     funcWrapper(dbWrapper().findOrderItems)(orderId),
   updateOrderItem: async (orderItem) =>
     funcWrapper(dbWrapper().updateOrderItem)(orderItem),
+  updateUser: async (user) => funcWrapper(dbWrapper().updateUser)(user),
 };

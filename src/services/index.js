@@ -4,6 +4,8 @@ const fs = require('fs');
 const { pipeline } = require('stream');
 const { promisify } = require('util');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
 const helpers = require('./helpers');
 // const dataJson = require('../data.json');
 const { createCsvToJson } = require('./helpers/csv-to-json');
@@ -12,6 +14,12 @@ const arrayFromCsv = require('./helpers/csv');
 const { optimizeJson: jsonOptimize, calc } = require('./helpers/jsonOptimize');
 
 const db = require('../db');
+
+const {
+  server: {
+    token: { SECRET_KEY, REFRESH_EXPIRES_IN, ACCESS_EXPIRES_IN },
+  },
+} = require('../config');
 
 const promisifiedPipeline = promisify(pipeline);
 
@@ -39,6 +47,12 @@ function notFound() {
     code: 404,
     message: 'page not found',
   };
+}
+
+function generateJwt(payload, typeToken) {
+  return jwt.sign(payload, SECRET_KEY, {
+    expiresIn: typeToken,
+  });
 }
 
 const rules = {
@@ -691,16 +705,107 @@ async function login(req) {
       message: 'Bad username or password',
     };
   }
-  const res = {
+
+  const payload = {
     id: user.id,
-    username: email,
-    password: user.password,
+    email,
+  };
+
+  const refreshToken = generateJwt(
+    { type: 'refresh', ...payload },
+    REFRESH_EXPIRES_IN,
+  );
+  const accessToken = generateJwt(
+    { type: 'access', ...payload },
+    ACCESS_EXPIRES_IN,
+  );
+
+  await db.updateUser({ id: user.id, token: refreshToken });
+
+  const res = {
+    refreshToken,
+    accessToken,
+    // id: user.id,
+    // username: email,
+    // password: user.password,
   };
 
   return {
     code: 200,
     message: res,
   };
+}
+
+async function updRefreshToken(req) {
+  try {
+    const token = req?.headers?.authorization?.split(' ')[1];
+    if (!token) {
+      return {
+        code: 401,
+        message: 'Unauthorized.',
+      };
+    }
+
+    const decoded = jwt.verify(token, SECRET_KEY, (err, resp) => {
+      if (err?.message === 'jwt expired') return err.message;
+      return resp;
+    });
+
+    if (decoded === 'jwt expired')
+      return {
+        code: 401,
+        message: 'Token expired, login again.',
+      };
+
+    if (decoded?.type === 'access')
+      return {
+        code: 401,
+        message: 'Use only refresh token.',
+      };
+
+    const user = await db.findUser(decoded.email);
+    if (!user) {
+      return {
+        code: 404,
+        message: `User with email - ${decoded.email} not found`,
+      };
+    }
+
+    if (user.token !== token) {
+      return {
+        code: 401,
+        message: 'Unauthorized.',
+      };
+    }
+
+    const payload = {
+      id: user.id,
+      email: user.email,
+    };
+
+    const refreshToken = generateJwt(
+      { type: 'refresh', ...payload },
+      REFRESH_EXPIRES_IN,
+    );
+    const accessToken = generateJwt(
+      { type: 'access', ...payload },
+      ACCESS_EXPIRES_IN,
+    );
+
+    await db.updateUser({ id: user.id, token: refreshToken });
+
+    const res = {
+      refreshToken,
+      accessToken,
+    };
+
+    return {
+      code: 200,
+      message: res,
+    };
+  } catch (e) {
+    return new Error(401);
+  }
 }
 
 async function addOrder(req) {
@@ -840,4 +945,5 @@ module.exports = {
   login,
   addOrder,
   getOrder,
+  updRefreshToken,
 };

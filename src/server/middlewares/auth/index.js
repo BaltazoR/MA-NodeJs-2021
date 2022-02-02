@@ -1,38 +1,32 @@
-// const { auth: basicAuth } = require('../../../config');
-const db = require('../../../db');
+const jwt = require('jsonwebtoken');
+
+const {
+  server: {
+    token: { SECRET_KEY },
+  },
+} = require('../../../config');
 
 const auth = async (req, res, next) => {
-  const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
-  const [username, password] = Buffer.from(b64auth, 'base64')
-    .toString()
-    .split(':');
+  try {
+    const token = req?.headers?.authorization?.split(' ')[1];
+    if (!token) {
+      return next(new Error(401));
+    }
 
-  const user = await db.findUser(username);
+    const decoded = jwt.verify(token, SECRET_KEY, (err, resp) => {
+      if (err?.message === 'jwt expired') return err.message;
+      return resp;
+    });
 
-  if (
-    username &&
-    password &&
-    user &&
-    username === user.email &&
-    password === user.password
-  ) {
-    // const data = 'Masters:Academy';
-    // let buff = Buffer.from(data);
-    // const base64data = buff.toString('base64');
+    if (decoded === 'jwt expired') return next(new Error(decoded));
 
-    // console.log(base64data);
+    if (decoded?.type === 'refresh') return next(new Error('refresh'));
 
-    // buff = Buffer.from(base64data, 'base64');
-    // const text = buff.toString();
-
-    // console.log(text);
-    // console.log(req.headers.authorization.split(' ')[1]);
-
-    req.user = { id: user.id, username: user.email };
+    req.user = { id: decoded.id, username: decoded.email };
     return next();
+  } catch (e) {
+    return next(new Error(401));
   }
-
-  return next(new Error(403));
 };
 
 module.exports = auth;

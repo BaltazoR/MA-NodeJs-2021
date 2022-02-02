@@ -21,15 +21,34 @@
         "password": "12345"
       }
 
-  В Response получаем юзера(email) и хэшированный пароль, который будем 
-  использовать при всех последующих действиях (Basic Auth).
-
   Response:
-    {
-      "id": "fae25948-6826-4ed7-99dd-934139636e8a",
-      "username": "user@localhost.com",
-      "password": "$2b$05$hhiUNG2CD/yP7F3BVNdag.GVJJ5CLgWe7ii9xDVowG25mYPkyiqli"
-    }
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+    eyJ0eXBlIjoicmVmcmVzaCIsImlkIjoiNDRhZjFjNWYtNDBhMy00YzM4LWEyMDQtNzg0Y2UzNjkzOTYwIiwiZW1haWwiOiJ1c2VyQGxvY2FsaG9zdC5jb20iLCJpYXQiOjE2NDM3NDAxNzYsImV4cCI6MTY0MzgyNjU3Nn0.
+    uYj8vydsFW6XD2jYND0vSvnDmMPCMOv2_XJm1qk2oGo",
+
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+    eyJ0eXBlIjoiYWNjZXNzIiwiaWQiOiI0NGFmMWM1Zi00MGEzLTRjMzgtYTIwNC03ODRjZTM2OTM5NjAiLCJlbWFpbCI6InVzZXJAbG9jYWxob3N0LmNvbSIsImlhdCI6MTY0Mzc0MDE3NiwiZXhwIjoxNjQzNzQwMzU2fQ.
+    MjJqqmm1tLZzK1cOJTRUgAsfZE4prg8m2CNNecs1Fhk"
+}
+
+  В Response получаем 2ва токена - AccessToken и RefreshToken.
+  AccessToken будем использовать при всех последующих действиях (Bearer token). 
+  Он имеет короткий срок жизни. По его истечению необходимо его обновить. 
+  
+  * Для обновления AccessToken воспользуемся RefreshToken-ом, перейдя на эндпоинт:
+
+      Endpoint: GET /refresh
+
+      В хэдэре (Bearer token) передаем RefreshToken. После этого в ответе получаем 
+        новую пару токенов.
+
+      Response:
+
+      {
+        "refreshToken": "...",
+        "accessToken": "..."
+      }
 
 7. Загружаем список продуктов с файла data_100.csv
     Endpoint: PUT /data

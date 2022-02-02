@@ -173,6 +173,12 @@ async function getOrder(req, res) {
   res.json(message);
 }
 
+async function updRefreshToken(req, res) {
+  const { message, code } = await services.updRefreshToken(req);
+  res.statusCode = code;
+  res.json(message);
+}
+
 module.exports = {
   notFound,
   filter,
@@ -197,4 +203,5 @@ module.exports = {
   login,
   addOrder,
   getOrder,
+  updRefreshToken,
 };
