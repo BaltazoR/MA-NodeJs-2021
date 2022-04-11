@@ -82,3 +82,58 @@
 9. Просматриваем наш заказ
     Endpoint: GET /basket/getorder
 
+10. Расчет стоимости доставки делаем в два шага:
+      1. узнаем айди (Ref) городов
+        Endpoint: POST /getCities
+
+        BODY:
+          {
+            "CitySender": "Черкаси", // отправитель
+            "CityRecipient": "Шостка" // получатель
+          }
+        
+        Response:
+
+          {
+            "citySender": [
+                {
+                    "Description": "Черкаси",
+                   ...
+                    "Ref": "db5c8902-391c-11dd-90d9-001a92567626",
+                    ...
+                }
+            ],
+            "cityRecipient": [
+                {
+                    "Description": "Шостка",
+                   ...
+                    "Ref": "e221d64c-391c-11dd-90d9-001a92567626",
+                   ...
+                }
+            ]
+          }
+
+      2. Рассчитываем стоимость. Берем айди (Ref) с предыдущего запроса и 
+         формируем новый
+
+         Endpoint: POST /getdocumentprice
+
+          BODY:
+            {
+              "CitySender": "db5c8902-391c-11dd-90d9-001a92567626",
+              "CityRecipient": "db5c88f5-391c-11dd-90d9-001a92567626",
+              "Weight": "10", // вес
+              "Cost": "1500" // оценочная стоимость
+            }
+
+          Response:
+            {
+                ...
+                "data": [
+                    {
+                        "Cost": 88, // стоимость доставки
+                        "AssessedCost": 1500
+                    }
+                ],
+              ...
+            }

@@ -48,8 +48,15 @@ const db = {
   },
 };
 
+const apiKeyDelivery = {
+  apiKey: process.env.NP_API_KEY || fatal('FATAL: NP_API_KEY is no defined'),
+  entryPoint:
+    process.env.NP_ENTRY_POINT || fatal('FATAL: NP_ENTRY_POINT is no defined'),
+};
+
 module.exports = {
   server,
   auth,
   db,
+  apiKeyDelivery,
 };

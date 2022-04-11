@@ -5,6 +5,7 @@ const helper3 = require('./helper3');
 const discountPromise = require('./helperDiscountPromise');
 const discountPromisify = require('./helperDiscountPromisify');
 const discountAsync = require('./helperDiscountAsync');
+const delivery = require('./delivery');
 
 module.exports = {
   helper1,
@@ -13,4 +14,5 @@ module.exports = {
   discountPromise,
   discountPromisify,
   discountAsync,
+  delivery,
 };

@@ -12,6 +12,7 @@ const { createCsvToJson } = require('./helpers/csv-to-json');
 const { createCsv } = require('./helpers/csv-express');
 const arrayFromCsv = require('./helpers/csv');
 const { optimizeJson: jsonOptimize, calc } = require('./helpers/jsonOptimize');
+const { getCity, getPrice } = require('./helpers/delivery');
 
 const db = require('../db');
 
@@ -920,6 +921,31 @@ async function getOrder(req) {
   };
 }
 
+async function getCities(req) {
+  let citySender = await getCity(req.body.CitySender);
+  citySender = citySender.data.data;
+
+  let cityRecipient = await getCity(req.body.CityRecipient);
+  cityRecipient = cityRecipient.data.data;
+
+  return {
+    code: 200,
+    message: {
+      citySender,
+      cityRecipient,
+    },
+  };
+}
+
+async function getDocumentPrice(req) {
+  const message = await getPrice(req.body);
+
+  return {
+    code: 200,
+    message: message.data,
+  };
+}
+
 module.exports = {
   notFound,
   filter,
@@ -946,4 +972,6 @@ module.exports = {
   addOrder,
   getOrder,
   updRefreshToken,
+  getCities,
+  getDocumentPrice,
 };
