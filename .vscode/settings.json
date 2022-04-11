@@ -3,6 +3,8 @@
     "addorder",
     "createproduct",
     "deleteproduct",
+    "getcities",
+    "getdocumentprice",
     "getorder",
     "getorders",
     "getproduct",

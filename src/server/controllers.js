@@ -179,6 +179,18 @@ async function updRefreshToken(req, res) {
   res.json(message);
 }
 
+async function getCities(req, res) {
+  const { message, code } = await services.getCities(req);
+  res.statusCode = code;
+  res.json(message);
+}
+
+async function getDocumentPrice(req, res) {
+  const { message, code } = await services.getDocumentPrice(req);
+  res.statusCode = code;
+  res.json(message);
+}
+
 module.exports = {
   notFound,
   filter,
@@ -204,4 +216,6 @@ module.exports = {
   addOrder,
   getOrder,
   updRefreshToken,
+  getCities,
+  getDocumentPrice,
 };
